@@ -1,0 +1,126 @@
+.containerVerServicios {
+    width: 100vw;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 2%;
+    margin-bottom: 2%;
+
+}
+
+.containerVerServicios .descripcion1 {
+    width: 100vw;
+    text-align: center;
+    font-stretch: normal;
+    font-style: regular;
+        font-size: 40px;
+    color: rgb(0, 0, 0);
+}
+
+.containerVerServicios .descripcion2 {
+    width: 100vw;
+    text-align: center;
+    font-stretch: normal;
+    font-style: light;
+    font-weight: 300;
+        font-size: 2rem;
+    color: rgba(0, 0, 0, 0.5);
+    margin: 10px;
+}
+
+.ButtonVerServicios {
+    width: 266px;
+    height: 39px;
+    background-color: #433B24;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10px auto;
+    border-radius: 8px;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.5);
+}
+
+.ButtonVerServicios:hover {
+    transform: scale(1.05);
+    transition: transform 0.3s ease-in-out;
+}
+
+.Servicios-Container {
+    display: flex;
+    width: 100vw;
+    height: auto;
+    justify-content: center;
+}
+
+.Servicio-Wrapper {
+    position: relative;
+    width: 20%;
+    height: 50vh;
+    margin: 2%;
+}
+
+.contenedor-servicio{ 
+    width: 100%;
+    height: 100%;
+    display: flex;
+    position: relative;
+} 
+
+.Imagen-Servicio {
+ 
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    object-fit: cover;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.5);
+}
+
+.Titulo-Servicio { 
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%; 
+    height: 100%;
+    background-color: rgba(67, 59, 36, 0.5); 
+    color: white;
+    border-radius: 8px;
+    font-family: "Montserrat", sans-serif;
+    font-size: 20px;
+    text-align: center;
+    font-weight: bold;
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    box-sizing: border-box; 
+} 
+
+
+
+.contenedor-servicio:hover .Imagen-Servicio,
+.contenedor-servicio:hover .Titulo-Servicio {
+    transform: scale(1.05);
+    transition: transform 0.3s ease-in-out;
+    z-index: 1;
+}
+
+
+@media (max-width: 1100px) {
+    .containerVerServicios .descripcion1 {
+        display: none;
+    }
+    .Servicios-Container {
+        flex-direction: column;
+        align-items: center;
+    }
+    .Servicio-Wrapper {
+        width: 90%;
+        height: auto;
+    }
+    .Titulo-Servicio,
+    .Imagen-Servicio {
+        box-shadow: none;      
+    }
+ 
+}

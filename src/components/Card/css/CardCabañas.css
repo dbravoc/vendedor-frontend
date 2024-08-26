@@ -1,0 +1,206 @@
+.CardCabañas { 
+    width: 100%;
+    display: grid;
+    background-color: white; 
+    align-items: center 
+}
+;
+.InformacionCabañas { 
+    width: 100%; 
+    height: auto;
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    
+}
+
+.BotonVolverCabañas { 
+    width: 100%; 
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center ; 
+    align-items: flex-start; 
+    margin-top: 20px;
+}
+
+.BotonVolverCabañas .Volver {
+    text-decoration: none;
+    color: rgba(0, 0, 0, 0.4);
+    font-size: 15px; 
+    font-family: 'Montserrat'; 
+}
+.BotonVolverCabañas .arrow-left {
+    width: 15px;
+    height: 15px;
+    color: rgba(0, 0, 0, 0.4); 
+   
+
+}
+.BotonVolverCabañas a  { 
+    width: 100%; 
+    height: auto;
+    display: flex; 
+    justify-content: flex-start;  
+    padding-left: 10%;
+    align-items: center;
+
+}
+
+.BotonVolverCabañas .arrow-left :hover {
+    transform: scale(1.2);
+    transition: transform 0.3s ease-in-out;
+}
+
+
+.TituloCabañas { 
+    width: 100%; 
+    height: auto;
+    display: flex; 
+    flex-direction: column;
+    justify-content: center;
+    align-items:  flex-start;
+    padding-left: 10%; 
+} 
+
+.TituloCabañas .Titulo { 
+    width: auto;  
+    height: auto;
+    font-family: "DM Serif Display";  
+    font-size: 50px; 
+    color: black;
+} 
+
+.TituloCabañas .Descripcion {  
+    width: auto ;
+    height: auto; 
+    font-family: "Montserrat";  
+    font-size: 15px; 
+    color: black; 
+    justify-content: flex-start;
+    text-align: start; 
+    margin-right: 10%;
+}  
+
+.ContenedorImagenes { 
+    width: 100vw; 
+    height: auto;
+    display: flex; 
+    justify-content: center; 
+    flex-direction: column;
+    align-items: center;
+    padding: 1%;
+} 
+
+.ContenedorImagenes .FilasImagenes {   
+    width: 100%;
+    height: auto;
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+} 
+
+.FilasImagenes .Box { 
+    display: flex;
+    flex-direction: column;
+    background-color: transparent;
+    width: 40vw;
+    height: 40vh;
+    margin: 1%;
+} 
+
+.FilasImagenes .Box  img{ 
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+
+} 
+.ContenidoCabañas { 
+    width: 80vw; 
+    height: auto;
+    display: flex; 
+    justify-content: flex-start; 
+    flex-direction: column;
+    align-items: center;
+    margin: 5%;
+    background-color: #F2F2F2;
+    border-radius: 8px;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.5);
+    padding-top: 20px;
+    padding-bottom: 20px;
+
+} 
+
+.ContenidoCabañas .Titulo{
+    width: auto ;
+    height: auto; 
+    font-family: "Montserrat";  
+    font-size: 2rem; 
+    color: rgba(0, 0, 0, 2); 
+    align-self: center;
+}    
+.ContenidoCabañas .Columnas{
+    width: 55vw ;
+    height: auto; 
+    display: flex; 
+    justify-content: space-between;   
+    align-items: flex-start;  
+    padding-top: 2%;
+    
+} 
+.ContenidoCabañas .Columnas .Columna{
+    width: 100% ;
+    height: auto; 
+    display: flex; 
+    justify-content: space-between;  
+    flex-direction: column; 
+    align-items: flex-start;  
+    margin-left: 5%;
+    
+} 
+
+.ContenidoCabañas .Columnas .Columna li{
+    font-family: "Montserrat";  
+    font-size: 15px; 
+    color: rgba(0, 0, 0, 0.8); 
+    text-align: start;
+    
+}  
+.CardCabanasDescripcion{ 
+    display: flex;
+} 
+.ImagenCabañasTipo{ 
+    display: none;
+}
+@media (max-width: 1135px) { 
+
+    .ImagenCabañasTipo{ 
+        display: flex; 
+        width: 100%;
+    }.ImagenCabañasTipo img{ 
+        width: 100vw; 
+    }.TituloCabañas{
+        justify-content: center; 
+        align-items: center; 
+        width: 100vw;
+        padding-left: 0px; ;
+    }.TituloCabañas .Titulo{
+        font-size: 2.5rem;
+    }.TituloCabañas .Descripcion{
+        margin-left: 5%;
+        margin-left: 5%;
+        text-align: center;
+    }
+    .FilasImagenes .Box{
+        width: 100vw;
+        height: 50vh; 
+
+    }.ContenedorImagenes .FilasImagenes { 
+        flex-direction: column;
+    }.ContenidoCabañas{
+        height: auto;
+    }
+}

@@ -1,0 +1,6 @@
+.date-input {
+    width: 100%; /* Ajusta esto según el tamaño que necesites */
+    max-width: 300px; /* Ajusta esto según el tamaño que necesites */
+    box-sizing: border-box; /* Asegura que el padding y el borde se incluyan en el ancho total */
+ 
+}

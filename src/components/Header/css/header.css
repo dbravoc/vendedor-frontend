@@ -1,0 +1,89 @@
+
+.header-transparent {
+  background: transparent;
+  color: transparent;
+  position: fixed;
+  z-index: 1000;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 2%;
+  height: 80px;
+}
+
+.header-solid {
+  background: white;
+  position: fixed;
+  z-index: 1000;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 2%;
+  height: 80px;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.2);
+}
+/* Logo Container */
+.logo-container-header{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+}
+
+/* Logo */
+.logo {
+  width: 150px;
+  height: auto;
+}
+.logo:hover {
+  transform: scale(1.05); 
+  transition: transform 0.3s ease-in-out; 
+}
+
+/* Column corresponde al vacio entre el logo y el Sidebar */
+.column {
+  display: flex;
+  align-items: center;
+  background-color: transparent;
+  border: none;
+  padding: 10px;
+  justify-content: center;
+}
+
+/* Button Container */
+.button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  justify-content: center;
+  padding-right: 5px;
+}
+
+/* Botón de Reserva */
+.reserva-button {
+  background-color: #433B24;
+  color: white;
+  width: 100px;
+  height: 31px;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.6); 
+  border-radius: 8px;
+  
+  
+}
+.reserva-button:hover {
+  transform: scale(1.05); 
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Sidebar Container */
+.sidebar-container-header{
+  display: flex;
+  justify-content: flex-start;
+  /* Alinea el sidebar al principio del contenedor */
+  align-items: center;
+  padding-right: 10px;
+  /* Añade un espacio entre el sidebar y el botón de reserva */
+}

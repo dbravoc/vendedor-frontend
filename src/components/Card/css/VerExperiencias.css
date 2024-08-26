@@ -1,0 +1,113 @@
+.card-experiencias {
+    width: 100vw;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; 
+    padding-top: 2%;
+}
+
+.fila-experiencia-descripcion {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: auto;
+}
+
+.fila-experiencia-descripcion .p1 {
+    position: relative;  
+    width: auto;
+    height: auto;
+    text-align: center;
+    font-stretch: normal;
+    font-style: light;
+        font-size: calc(16px + 0.5vw);
+    color: rgba(0, 0, 0, 0.8); 
+}
+.fila-experiencia-descripcion .p2 {
+    position: relative; 
+    width: auto;
+    height: auto;
+    text-align: center;
+    font-stretch: normal;
+    font-style: regular;
+    font-family: "DM Serif Display";
+    font-size: calc(24px + 1vw);
+    color: rgba(0, 0, 0, 1); 
+}
+
+.filaExperienciaTipos{
+    display: flex;
+    width: 100%; 
+    height: auto;
+    align-items: center;
+    justify-content: center; 
+} 
+
+
+.columna-tipo-experiencias {
+    display: flex;
+    flex-direction: column;
+    background-color: transparent;
+    width: 50vw;
+    height: auto;
+    align-items: center;
+    justify-content: center;
+
+} 
+
+
+.columna-tipo-experiencias .ContenedorImagen {   
+    width: 80%; 
+    height: auto;
+}
+
+a:hover .columna-tipo-experiencias {
+    transform: scale(1.01); 
+    transition: transform 0.3s ease-in-out;
+    z-index: 1; 
+}
+
+.columna-tipo-experiencias .ContenedorImagen img {
+    width: 100%;
+    height: 40vh; 
+    object-fit: cover; 
+    border-radius: 8px;
+    
+
+}
+.columna-tipo-experiencias .ContenedorImagen .NombreExperiencia { 
+    position: relative;
+    width: 100%; 
+    height: auto; 
+    text-align: center; 
+    font-family: "Montserrat";  
+    font-size: 1.5em;
+    color: white;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, 500%);
+}
+
+
+
+@media (max-width: 1100px) {
+    .filaExperienciaTipos{ 
+        flex-direction: column; 
+        
+    }.columna-tipo-experiencias {
+        width: 100%;
+    
+    } .columna-tipo-experiencias .ContenedorImagen {   
+        width: 90%; 
+        
+    }
+    
+    
+    
+
+}
+

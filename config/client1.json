@@ -1,0 +1,22 @@
+{
+    "colors": {
+        "primaryColor": "#A3D6DF",
+        "secondaryColor": "#FACC15",
+        "textColor1": "#000000",
+        "textColor2": "#FFFFFF"
+    },
+    "texts": {
+        "text1": "Hello, world!",
+        "text2": "Welcome to Bucont!"
+    },
+    "images_marca": {
+        "logo": "https://lqieogqayryfoykmpoey.supabase.co/storage/v1/object/public/imagenes/output.mp4?t=2024-08-14T20%3A14%3A09.765Z"
+    },
+    "images_unidad": {
+        "1": "https://lqieogqayryfoykmpoey.supabase.co/storage/v1/object/public/imagenes/output.mp4?t=2024-08-14T20%3A14%3A09.765Z"
+    },
+    "videos": {
+        "video1": "https://lqieogqayryfoykmpoey.supabase.co/storage/v1/object/public/imagenes/output.mp4?t=2024-08-14T20%3A14%3A09.765Z",
+        "video2": "https://lqieogqayryfoykmpoey.supabase.co/storage/v1/object/public/imagenes/observatorioMDE.mp4?t=2024-08-14T20%3A15%3A59.121Z"
+    }
+}
