@@ -6,7 +6,7 @@
     font-size: 15px;
     /* Letra en negrita */
     background-color: white;
-    color: #433B24;
+    color: #212121;
     opacity: 1; /* Ajusta este valor según tus necesidades */
     margin: 20px auto;
     padding: 4px 20px;
@@ -16,7 +16,7 @@
 
 }  
 .footer {
-    background-color: #433B24;
+    background-color: #212121;
     display: flex;
     justify-content: space-between;
     align-items: start; 
@@ -27,7 +27,7 @@
 
 }
 .column-footer-rows{
-    background-color: #433B24;
+    background-color: #212121;
     align-items: center;
     justify-content: center;
     border: none;
@@ -39,7 +39,7 @@
 
 }
 .column-footer-columns{
-    background-color: #433B24;
+    background-color: #212121;
     align-items: center; 
     display: flex; 
     justify-content: center;
@@ -49,7 +49,7 @@
 
 } 
 .column-footer-description{
-    background-color: #433B24;
+    background-color: #212121;
     align-items: center; 
     display: flex; 
     flex-direction: column;

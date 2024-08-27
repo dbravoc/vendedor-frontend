@@ -48,19 +48,11 @@ const SidebarHeader = () => {
             </div>
             <div className="sidebar-body">
               <a href="/" className="menu-item">Inicio</a>
-              <a href="/tienda" className="sidebar-item">Todo</a>
-              <div className="experiencias-item" onClick={toggleSidebar}>
-                <div className="experiencias-content">
-                  Categorías
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="arrow-icon">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 5.25 7.5 7.5 7.5-7.5m-15 6 7.5 7.5 7.5-7.5" />
-                  </svg>
-                </div>
-                <div className="submenu">
-                  <a href="/Experiencias/Observatorio" className="submenu-item">Categoría 1</a>
-                  <a href="/Experiencias/Tours" className="submenu-item">Categoría 2</a>
-                </div>
-              </div>
+              <a href="/dashboard" className="sidebar-item">Dashboard</a>
+              <a href="/productos" className="sidebar-item">Productos</a>
+              <a href="/inventario" className="sidebar-item">Inventario</a>
+              <a href="/alertas" className="sidebar-item">Alertas</a>
+              <a href="/manual" className="sidebar-item">Gestión manual</a>
             </div>
           </div>
         </div>

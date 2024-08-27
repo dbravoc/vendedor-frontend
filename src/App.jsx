@@ -7,6 +7,7 @@ import AOS from 'aos';
 import { useLocation } from 'react-router-dom';
 import Inicio from './pages/Inicio';
 import Productos from './pages/Productos'; // Asegúrate de importar el nuevo componente
+import Inventario from './pages/Inventario';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -32,7 +33,8 @@ function App() {
       <div className="App font-poppins">
         <Routes>
           <Route path="/" element={<Inicio />} /> {/* Ruta principal */}
-          <Route path="/productos" element={<Productos />} /> {/* Nueva ruta para Gestión de Productos */}
+          <Route path="/productos" element={<Productos />} /> 
+          <Route path="/inventario" element={<Inventario />} /> 
           <Route path="*" element={<ResetURL />} /> {/* Ruta de manejo de errores */}
         </Routes>
       </div>

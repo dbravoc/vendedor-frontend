@@ -16,7 +16,7 @@ const features = [
   {
     name: 'Dashboard',
     description:
-      'Vista general de estadísticas clave, incluyendo ventas, productos agotados y alertas de inventario bajo.',
+      'Vista general de estadísticas e informes de inventario',
     icon: faChartLine,
     link: "/dashboard"
   },
@@ -35,21 +35,7 @@ const features = [
     link: "/inventario"
   },
   {
-    name: 'Alertas de inventario bajo',
-    description:
-      'Configure umbrales de stock mínimo y reciba alertas cuando el stock sea bajo.',
-    icon: faBell,
-    link: "/alertas"
-  },
-  {
-    name: 'Informes de inventario',
-    description:
-      'Genere y exporte la data sobre el estado del inventario en formato CSV.',
-    icon: faFileAlt,
-    link: "/informes"
-  },
-  {
-    name: 'Gestión de ventas y devoluciones',
+    name: 'Gestión manual',
     description:
       'Gestione las salidas e ingresos manuales del inventario.',
     icon: faReceipt,
