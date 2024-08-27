@@ -25,7 +25,7 @@ const features = [
     description:
       'Añada, edite y elimine productos del inventario con facilidad.',
     icon: faBoxes,
-    link: "/productos"
+    link: "/productos",
   },
   {
     name: 'Control de inventario',

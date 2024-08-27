@@ -3,7 +3,7 @@ import SidebarHeader from '../Sidebar/SidebarHeader'; // Importa el componente S
 import './css/header.css'; // Importa el archivo de estilos CSS
 
 const Header = ({ scrollPosition }) => {
-  const headerClass = scrollPosition === 1 ? 'header-solid' : 'header-transparent';
+  const headerClass = 'header-solid' ; // Selecciona la clase del header en función de scrollPosition
   const logoWhite = "https://lqieogqayryfoykmpoey.supabase.co/storage/v1/object/public/imagenes/logo%20bucont%20azul%20png";
   const logoBlack = "https://lqieogqayryfoykmpoey.supabase.co/storage/v1/object/public/imagenes/logo%20bucont%20azul%20png";
 
