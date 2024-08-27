@@ -6,7 +6,7 @@ import 'aos/dist/aos.css';
 import AOS from 'aos';
 import { useLocation } from 'react-router-dom';
 import Inicio from './pages/Inicio';
-import Productos from './components/Card/Productos'; // Asegúrate de importar el nuevo componente
+import Productos from './pages/Productos'; // Asegúrate de importar el nuevo componente
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
