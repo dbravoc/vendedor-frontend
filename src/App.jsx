@@ -1,13 +1,13 @@
-import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Route, Routes, useLocation, Navigate } from 'react-router-dom';
 import './App.css';
 import ResetURL from './components/Common/ResetUrl';
 import 'aos/dist/aos.css';
 import AOS from 'aos';
-import { useLocation } from 'react-router-dom';
 import Inicio from './pages/Inicio';
-import Productos from './pages/Productos'; // Asegúrate de importar el nuevo componente
+import Productos from './pages/Productos';
 import Inventario from './pages/Inventario';
+import Login from './components/Login/CardLogin';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -19,6 +19,34 @@ const ScrollToTop = () => {
   return null;
 };
 
+function ProtectedRoute({ children }) {
+  const [isAuthorized, setIsAuthorized] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = localStorage.getItem('access_token');
+      if (token) {
+        // Aquí podrías hacer una llamada a tu backend para verificar el token y el acceso del usuario.
+        setIsAuthorized(true);
+      }
+      setIsLoading(false);
+    };
+
+    checkAuth();
+  }, []);
+
+  if (isLoading) {
+    return <div>Cargando...</div>;
+  }
+
+  if (!isAuthorized) {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
+}
+
 function App() {
   useEffect(() => {
     AOS.init({
@@ -28,14 +56,15 @@ function App() {
   }, []);
 
   return (
-    <Router> {/* Router envuelve todo */}
+    <Router>
       <ScrollToTop />
       <div className="App font-poppins">
         <Routes>
-          <Route path="/" element={<Inicio />} /> {/* Ruta principal */}
-          <Route path="/productos" element={<Productos />} /> 
-          <Route path="/inventario" element={<Inventario />} /> 
-          <Route path="*" element={<ResetURL />} /> {/* Ruta de manejo de errores */}
+          <Route path="/" element={<Login />} />
+          <Route path="/inicio" element={<ProtectedRoute><Inicio /></ProtectedRoute>} />
+          <Route path="/productos" element={<ProtectedRoute><Productos /></ProtectedRoute>} />
+          <Route path="/inventario" element={<ProtectedRoute><Inventario /></ProtectedRoute>} />
+          <Route path="*" element={<ResetURL />} />
         </Routes>
       </div>
     </Router>

@@ -18,7 +18,13 @@ module.exports = {
         },
         elqui2: {
           DEFAULT: '#82673B'
-        }
+        },
+        bu1: {
+          DEFAULT: '#212121',
+        },
+        bu2: {
+          DEFAULT: '#10D3F9',
+        },
       },
     },
   },

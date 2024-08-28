@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import './css/inicio.css';
 import Header from '../components/Header/header';
 import Footer from '../components/Footer/Footer';
-import Vendedor from '../components/Card/Vendedor'
+import CardLogin from '../components/Card/Login' // Renamed the variable to avoid conflict
 import { useWindowScroll } from '@uidotdev/usehooks';
 
-const Inicio = () => {
+const Login = () => {
   const [{ y }] = useWindowScroll();
   const [scrollPosition, setScrollPosition] = useState(0);
 
@@ -24,7 +24,7 @@ const Inicio = () => {
       <Header scrollPosition={scrollPosition} className="fixed-header" />
       <div className="cuerpo">
         <div className='Cabaña-Inicio' data-aos="fade-up">
-          <Vendedor />
+          <CardLogin />
         </div>
 
         <div className='outer-div-Footer'>
@@ -35,4 +35,4 @@ const Inicio = () => {
   );
 };
 
-export default Inicio;
+export default Login;

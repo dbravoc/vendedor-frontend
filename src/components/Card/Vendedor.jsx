@@ -10,16 +10,10 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 
-import './css/Anfitrion.css';
+import './css/Vendedor.css';
 
 const features = [
-  {
-    name: 'Dashboard',
-    description:
-      'Vista general de estadísticas e informes de inventario',
-    icon: faChartLine,
-    link: "/dashboard"
-  },
+
   {
     name: 'Gestión de productos',
     description:
@@ -43,15 +37,15 @@ const features = [
   },
 ];
 
-export default function Anfitrion() {
+export default function Vendedor() {
   return (
     <div className="bg-white min-h-screen w-screen py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl lg:text-center">
-          <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 bg sm:text-4xl">
+          <p className="mt-2 text-3xl font-bold tracking-tight text-bu2 bg sm:text-4xl">
             Inventory Manager
           </p>
-          <p className="mt-6 text-lg leading-8 text-gray-600">
+          <p className="mt-6 text-lg leading-8 text-bu1">
            Controla tu negocio desde un solo panel intuitivo y optimizado.
           </p>
         </div>
@@ -59,13 +53,13 @@ export default function Anfitrion() {
           <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none text-justify lg:gap-y-16">
             {features.map((feature) => (
               <div key={feature.name} className="relative pl-16">
-                <dt className="text-base font-semibold leading-7 text-gray-900">
-                  <div className="icono absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg">
+                <dt className="text-base font-semibold leading-7 text-bu1">
+                  <div className="bg-bu2 absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg">
                     <FontAwesomeIcon icon={feature.icon} aria-hidden="true" className="h-6 w-6 text-white" />
                   </div>
-                  <Link to={feature.link} className="textLink text-xl hover:underline">{feature.name}</Link>
+                  <Link to={feature.link} className="text-bu2 text-xl hover:underline">{feature.name}</Link>
                 </dt>
-                <dd className="mt-2 text-base leading-7 text-gray-600">{feature.description}</dd>
+                <dd className="mt-2 text-base leading-7 text-bu1">{feature.description}</dd>
               </div>
             ))}
           </dl>
