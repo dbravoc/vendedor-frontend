@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import './css/inicio.css';
 import Header from '../components/Header/header';
 import Footer from '../components/Footer/Footer';
@@ -25,7 +26,9 @@ const Productos = () => {
         <div className='Cabaña-Inicio' data-aos="fade-up">
         <ProductManager />
         </div>
-
+        <Link to="/agregarProducto" className="agregar-producto-button">
+          Agregar Producto
+        </Link> {/* Enlace para agregar producto */}
         <div className='outer-div-Footer'>
           <Footer />
         </div> 
