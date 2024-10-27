@@ -2,6 +2,7 @@ import React from 'react';
 import useProducts from '../Context/useProduct'; // Asegúrate de importar el hook desde la ubicación correcta
 import { faCircleCheck, faPenToSquare, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Link } from 'react-router-dom';
 
 const ProductManager = () => {
     const {
@@ -22,9 +23,14 @@ const ProductManager = () => {
         <div className="bg-white min-h-screen w-screen py-24 sm:py-32">
             <div className="mx-auto max-w-7xl px-6 lg:px-8">
                 <div className="mx-auto text-justify">
-                    <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-                        Gestión de productos
-                    </p>
+                    <div className="flex items-center justify-between">
+                        <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+                            Gestión de productos
+                        </p>
+                        <Link to="/agregarProducto" className="agregar-producto-button">
+                            Agregar Producto
+                        </Link> {/* Enlace para agregar producto */}
+                    </div>
                     <p className="my-6 text-lg leading-8 text-gray-600">
                         Añada, edite y elimine productos del inventario con facilidad.
                     </p>
