@@ -1,7 +1,21 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './css/createProductos.css';
+import Header from '../components/Header/header';
+import { useWindowScroll } from '@uidotdev/usehooks';
+import Footer from '../components/Footer/Footer';
+
 
 const AgregarProducto = () => {
+    const [{ y }] = useWindowScroll();
+    const [scrollPosition, setScrollPosition] = useState(0);
+  
+    useEffect(() => {
+      if (y > 700) {
+        setScrollPosition(1);
+      } else {
+        setScrollPosition(0);
+      }
+    }, [y]);
     const [product, setProduct] = useState({
         name: '',
         sku: '',
@@ -45,6 +59,7 @@ const AgregarProducto = () => {
                 commission_type: product.commission_type,
                 commission: parseFloat(product.commission),
                 supplier: product.supplier,
+                image: product.image,
                 consignment: product.consignment,
             };
             const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/products`, {
@@ -70,109 +85,130 @@ const AgregarProducto = () => {
     };
 
     return (
-        <div className="form-container">
-            <form onSubmit={handleSubmit}>
-                <input
-                    type="text"
-                    name="name"
-                    placeholder="Nombre del producto"
-                    value={product.name}
-                    onChange={handleChange}
-                    required
-                />
-                <input
-                    type="text"
-                    name="sku"
-                    placeholder="SKU del producto"
-                    value={product.sku}
-                    onChange={handleChange}
-                    required
-                />
-                <textarea
-                    name="description"
-                    placeholder="Descripción del producto"
-                    value={product.description}
-                    onChange={handleChange}
-                    required
-                />
-                <select
-                    name="type"
-                    value={product.type}
-                    onChange={(e) => handleChange({ target: { name: 'type', value: e.target.value.toLowerCase() } })} // Convertir a minúsculas
-                    required
-                >
-                    <option value="">Tipo de producto</option>
-                    <option value="planta">Planta</option>
-                    <option value="macetero">Macetero</option>
-                    <option value="otros">Otros</option>
-                </select>
-                <input
-                    type="text"
-                    name="categories"
-                    placeholder="Categorías (Separadas por comas)"
-                    value={product.categories}
-                    onChange={handleCategoriesChange}
-                />
-                <input
-                    type="number"
-                    name="initial_quantity"
-                    placeholder="Cantidad inicial"
-                    value={product.initial_quantity}
-                    onChange={handleChange}
-                    required
-                />
-                <input
-                    type="number"
-                    name="unit_cost"
-                    placeholder="Costo unitario (Precio Compra)"
-                    value={product.unit_cost}
-                    onChange={handleChange}
-                    required
-                />
-                <input
-                    type="number"
-                    name="price"
-                    placeholder="Precio del producto (Precio venta)"
-                    value={product.price}
-                    onChange={handleChange}
-                    required
-                />
-                <input
-                    type="text"
-                    name="commission_type"
-                    placeholder="Tipo de comisión"
-                    value={product.commission_type}
-                    onChange={handleChange}
-                    required
-                />
-                <input
-                    type="number"
-                    name="commission"
-                    placeholder="Comisión"
-                    value={product.commission}
-                    onChange={handleChange}
-                    required
-                />
-                <input
-                    type="text"
-                    name="supplier"
-                    placeholder="Proveedor"
-                    value={product.supplier}
-                    onChange={handleChange}
-                    required
-                />
-                <label>
-                    <input
-                        type="checkbox"
-                        name="consignment"
-                        checked={product.consignment}
-                        onChange={handleChange}
-                    />
-                    En consignación
-                </label>
-                <button type="submit">Agregar Producto</button>
-            </form>
-        </div>
+        <div className="contenedorInicio" >
+            <Header scrollPosition={scrollPosition} className="fixed-header" />
+            <div className="bg-white w-screen py-16 sm:py-0 mt-16">
+                <div className="title-container">
+                    <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl text-left">
+                        Agregar un producto
+                    </p>
+                </div>
+                <div className="form-container max-w-7xl px-6 lg:px-8">
+                    <form onSubmit={handleSubmit}>
+                        <input
+                            type="text"
+                            name="name"
+                            placeholder="Nombre del producto"
+                            value={product.name}
+                            onChange={handleChange}
+                            required
+                        />
+                        <input
+                            type="text"
+                            name="sku"
+                            placeholder="SKU del producto"
+                            value={product.sku}
+                            onChange={handleChange}
+                            required
+                        />
+                        <textarea
+                            name="description"
+                            placeholder="Descripción del producto"
+                            value={product.description}
+                            onChange={handleChange}
+                            required
+                        />
+                        <select
+                            name="type"
+                            value={product.type}
+                            onChange={(e) => handleChange({ target: { name: 'type', value: e.target.value.toLowerCase() } })} // Convertir a minúsculas
+                            required
+                        >
+                            <option value="">Tipo de producto</option>
+                            <option value="planta">Planta</option>
+                            <option value="macetero">Macetero</option>
+                            <option value="otros">Otros</option>
+                        </select>
+                        <input
+                            type="text"
+                            name="categories"
+                            placeholder="Categorías (Separadas por comas)"
+                            value={product.categories}
+                            onChange={handleCategoriesChange}
+                        />
+                        <input
+                            type="number"
+                            name="initial_quantity"
+                            placeholder="Cantidad inicial"
+                            value={product.initial_quantity}
+                            onChange={handleChange}
+                            required
+                        />
+                        <input
+                            type="number"
+                            name="unit_cost"
+                            placeholder="Costo unitario (Precio Compra)"
+                            value={product.unit_cost}
+                            onChange={handleChange}
+                            required
+                        />
+                        <input
+                            type="number"
+                            name="price"
+                            placeholder="Precio del producto (Precio venta)"
+                            value={product.price}
+                            onChange={handleChange}
+                            required
+                        />
+                        <input
+                            type="text"
+                            name="commission_type"
+                            placeholder="Tipo de comisión"
+                            value={product.commission_type}
+                            onChange={handleChange}
+                            required
+                        />
+                        <input
+                            type="number"
+                            name="commission"
+                            placeholder="Comisión"
+                            value={product.commission}
+                            onChange={handleChange}
+                            required
+                        />
+                        <input
+                            type="text"
+                            name="supplier"
+                            placeholder="Proveedor"
+                            value={product.supplier}
+                            onChange={handleChange}
+                            required
+                        />
+                        <input
+                            type="text"
+                            name="image"
+                            placeholder="Imágenes (links separados por coma)"
+                            value={product.image}
+                            onChange={handleChange}
+                            required
+                        />
+                        <label>
+                            <input
+                                type="checkbox"
+                                name="consignment"
+                                checked={product.consignment}
+                                onChange={handleChange}
+                            />
+                            En consignación
+                        </label>
+                        <button type="submit">Agregar Producto</button>
+                    </form>
+                </div> 
+            </div>
+            <div className="outer-div-Footer mt-auto w-full">
+                <Footer />
+            </div>
+        </div> 
     );
 };
 

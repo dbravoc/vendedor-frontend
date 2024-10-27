@@ -1,3 +1,11 @@
+.contenedorInicio {
+  background-color: #ffffff;
+}
+.outer-div-Footer {
+  background-color: red;
+  width: 100vw;
+  height: 15vh;
+}
 .form-container {
   max-width: 50%; /* Ancho máximo del formulario */
   margin: 0 auto; /* Margen superior e inferior de 20px y centrado horizontalmente */
@@ -32,3 +40,10 @@ button {
 button:hover {
   background-color: #45a049; /* Color de fondo del botón al pasar el mouse */
 }
+
+.title-container {
+  max-width: 50%; /* Ancho máximo para el encabezado */
+  margin: 0 auto; /* Centrado horizontalmente */
+  margin-top: 2%; /* Margen superior */
+}
+
