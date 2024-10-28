@@ -11,6 +11,10 @@ const StockManager = () => {
 
     if (isLoading) return <p>Cargando...</p>;
     if (error) return <p>Error: {error}</p>;
+    const totalMargen = products.reduce((total, product) => {
+        const margenTotal = (Math.round(product.price * 0.81) - product.unit_cost) * product.initial_quantity;
+        return total + margenTotal;
+    }, 0);
 
     return (
         <div className="bg-white min-h-screen w-screen py-24 sm:py-32">
@@ -22,6 +26,20 @@ const StockManager = () => {
                     <p className="my-6 text-lg leading-8 text-gray-600">
                         Revisa los movimientos de inventario con facilidad.
                     </p>
+                    
+                    <table className="mb-4 text-xs border-2 w-full">
+                    <thead>
+                        <tr>
+                            <th className="px-2 py-2 border-2">Margen Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td className="px-2 py-2 border-2">{totalMargen.toFixed(0)}</td>
+                        </tr>
+                    </tbody>
+
+                </table>
                     {/* Contenedor con scroll horizontal */}
                     <div className="overflow-x-auto">
                         <table className='text-xs border-2 w-full'>
@@ -30,6 +48,14 @@ const StockManager = () => {
                                     <th className="px-2 border-2">Nombre</th>
                                     <th className="px-2 border-2">Stock Actual</th>
                                     <th className="px-2 border-2">Stock Inicial</th>
+                                    <th className="px-2 border-2">Costo unitario</th>
+                                    <th className="px-2 border-2">Costo total</th>
+                                    <th className="px-2 border-2">Precio sin IVA</th>
+                                    <th className="px-2 border-2">Precio con IVA</th>
+                                    <th className="px-2 border-2">Margen unitario</th>
+                                    <th className="px-2 border-2">Margen total</th>
+
+
                                 </tr>
                             </thead>
                             <tbody>
@@ -40,7 +66,12 @@ const StockManager = () => {
                                             {stockData[product.id] !== undefined ? stockData[product.id] : 'Calculando...'}
                                         </td>
                                         <td className="px-2 border-2">{product.initial_quantity}</td>
-
+                                        <td className="px-2 border-2">{product.unit_cost}</td>
+                                        <td className="px-2 border-2">{product.unit_cost*product.initial_quantity}</td>
+                                        <td className="px-2 border-2">{(product.price * 0.81).toFixed(0)}</td>
+                                        <td className="px-2 border-2">{product.price}</td>
+                                        <td className="px-2 border-2">{(product.price * 0.81).toFixed(0)-product.unit_cost}</td>
+                                        <td className="px-2 border-2">{((product.price * 0.81).toFixed(0)-product.unit_cost)*product.initial_quantity}</td>
                                     </tr>
                                 ))}
                             </tbody>

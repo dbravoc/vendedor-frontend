@@ -6,6 +6,9 @@ import Footer from '../components/Footer/Footer';
 
 
 const AgregarProducto = () => {
+    const [successMessage, setSuccessMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+
     const [{ y }] = useWindowScroll();
     const [scrollPosition, setScrollPosition] = useState(0);
   
@@ -76,11 +79,14 @@ const AgregarProducto = () => {
 
             const data = await response.json();
             console.log(data);
-            // Aquí podrías hacer algo después de agregar el producto (como redirigir o mostrar un mensaje)
+            setSuccessMessage('Producto agregado exitosamente');
+            setTimeout(() => setSuccessMessage(''), 10000);
 
         } catch (error) {
             console.error(error);
-            // Manejo de errores
+            setErrorMessage(`Ocurrió un error al agregar el producto`);
+            setSuccessMessage(''); // Limpia el mensaje de éxito si ocurrió un error
+            setTimeout(() => setErrorMessage(''), 10000); // Oculta el mensaje de error después de 3 segundos
         }
     };
 
@@ -88,6 +94,18 @@ const AgregarProducto = () => {
         <div className="contenedorInicio" >
             <Header scrollPosition={scrollPosition} className="fixed-header" />
             <div className="bg-white w-screen py-16 sm:py-0 mt-16">
+                {successMessage && (
+                    <div className="bg-green-100 text-green-800 p-4 rounded mb-4">
+                        {successMessage}
+                    </div>
+                )}
+
+                {errorMessage && (
+                    <div className="bg-red-100 text-red-800 p-4 rounded mb-4">
+                        {errorMessage}
+                    </div>
+                )}
+
                 <div className="title-container">
                     <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl text-left">
                         Agregar un producto
