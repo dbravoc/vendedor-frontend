@@ -18,7 +18,7 @@ const ProductManager = () => {
 
     if (isLoading) return <p>Cargando...</p>;
     if (error) return <p>Error: {error}</p>;
-
+    console.log(products[0])
     return (
         <div className="bg-white min-h-screen w-screen py-24 sm:py-32">
             <div className="mx-auto max-w-7xl px-6 lg:px-8 mx-auto">
@@ -41,12 +41,15 @@ const ProductManager = () => {
                                 <tr>
                                     <th className="px-2">Nombre</th>
                                     <th className="px-2">Descripción</th>
+                                    <th className="px-2">Tipo</th>
+                                    <th className="px-2">Categorías</th>
+                                    <th className="px-2">Proveedor</th>
                                     <th className="px-2">Precio</th>
-                                    <th className="px-2">Cantidad Inicial</th>
-                                    <th className="px-2">Imagen</th>
-                                    <th className="px-2">Comisión</th>
                                     <th className="px-2">Costo Unitario</th>
+                                    <th className="px-2">Cantidad Inicial</th>
+                                    <th className="px-2">Tipo de Comisión</th>
                                     <th className="px-2">Consignación</th>
+                                    <th className="px-2">Imagen</th>
                                     <th className="px-2">Acciones</th>
                                 </tr>
                             </thead>
@@ -74,10 +77,37 @@ const ProductManager = () => {
                                         </td>
                                         <td className="px-2 bg-blue-100 border-2">
                                             <input
+                                                type="text"
+                                                name="type"
+                                                className="w-full bg-blue-100"
+                                                value={formData[product.id]?.type || product.type}
+                                                onChange={(e) => handleInputChange(e, product.id)}
+                                            />
+                                        </td>
+                                        <td className="px-2 bg-blue-100 border-2">
+                                            <input
+                                                type="text"
+                                                name="categories"
+                                                className="w-full bg-blue-100"
+                                                value={formData[product.id]?.categories || product.categories}
+                                                onChange={(e) => handleInputChange(e, product.id)}
+                                            />
+                                        </td>
+                                        <td className="px-2 bg-blue-100 border-2">
+                                            <input
                                                 type="number"
                                                 name="price"
                                                 className="w-full bg-blue-100"
                                                 value={formData[product.id]?.price || product.price}
+                                                onChange={(e) => handleInputChange(e, product.id)}
+                                            />
+                                        </td>
+                                        <td className="px-2 bg-blue-100 border-2">
+                                            <input
+                                                type="number"
+                                                name="unit_cost"
+                                                className="w-full bg-blue-100"
+                                                value={formData[product.id]?.unit_cost || product.unit_cost}
                                                 onChange={(e) => handleInputChange(e, product.id)}
                                             />
                                         </td>
@@ -93,27 +123,9 @@ const ProductManager = () => {
                                         <td className="px-2 bg-blue-100 border-2">
                                             <input
                                                 type="text"
-                                                name="image_1"
+                                                name="commission_type"
                                                 className="w-full bg-blue-100"
-                                                value={formData[product.id]?.image_1 || product.image_1}
-                                                onChange={(e) => handleInputChange(e, product.id)}
-                                            />
-                                        </td>
-                                        <td className="px-2 bg-blue-100 border-2">
-                                            <input
-                                                type="text"
-                                                name="commission"
-                                                className="w-full bg-blue-100"
-                                                value={formData[product.id]?.commission || product.commission}
-                                                onChange={(e) => handleInputChange(e, product.id)}
-                                            />
-                                        </td>
-                                        <td className="px-2 bg-blue-100 border-2">
-                                            <input
-                                                type="number"
-                                                name="unit_cost"
-                                                className="w-full bg-blue-100"
-                                                value={formData[product.id]?.unit_cost || product.unit_cost}
+                                                value={formData[product.id]?.commission_type || product.commission_type}
                                                 onChange={(e) => handleInputChange(e, product.id)}
                                             />
                                         </td>
@@ -126,6 +138,18 @@ const ProductManager = () => {
                                                 onChange={(e) => handleInputChange(e, product.id)}
                                             />
                                         </td>
+                                        <td className="px-2 bg-blue-100 border-2">
+                                            <input
+                                                type="text"
+                                                name="image_1"
+                                                className="w-full bg-blue-100"
+                                                value={formData[product.id]?.image_1 || product.image_1}
+                                                onChange={(e) => handleInputChange(e, product.id)}
+                                            />
+                                        </td>
+
+
+
                                         <td className="px-2 text-center space-x-4 bg-blue-100 border-2">
                                             <button onClick={() => handleSaveProduct(product.id)}>
                                                 <FontAwesomeIcon className='text-green-600' icon={faCircleCheck} />
@@ -139,12 +163,15 @@ const ProductManager = () => {
                                     <>
                                         <td className="px-2 border-2">{product.name}</td>
                                         <td className="px-2 border-2">{product.description}</td>
+                                        <td className="px-2 border-2">{product.type}</td>
+                                        <td className="px-2 border-2">{product.categories}</td>
+                                        <td className="px-2 border-2">{product.suppliers ? product.suppliers.name : "No disponible"}</td> {/* Nombre del proveedor */}
                                         <td className="px-2 border-2">{product.price}</td>
-                                        <td className="px-2 border-2">{product.initial_quantity}</td>
-                                        <td className="px-2 border-2">{product.image_1 ? 'Cargada' : 'Pendiente'}</td>
-                                        <td className="px-2 border-2">{product.commission}</td>
                                         <td className="px-2 border-2">{product.unit_cost}</td>
-                                        <td className="px-2 border-2">{product.consignment}</td>
+                                        <td className="px-2 border-2">{product.initial_quantity}</td>
+                                        <td className="px-2 border-2">{product.commission_type}</td>
+                                        <td className="px-2 border-2">{product.consignment ? "Sí" : "No"}</td>
+                                        <td className="px-2 border-2">{product.image_1 ? 'Cargada' : 'Pendiente'}</td>
                                         <td className="px-2 text-center space-x-2">
                                             <button onClick={() => setEditingProductId(product.id)}>
                                                 <FontAwesomeIcon className='text-blue-600' icon={faPenToSquare} />

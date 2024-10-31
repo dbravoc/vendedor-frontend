@@ -84,6 +84,7 @@ const StockManager = () => {
                                 .replace('Stock Actual', 'Stock Actual') // Asegura formato correcto
                                 .replace('Stock Inicial', 'Stock Inicial') // Asegura formato correcto
                                 .replace('Categories', 'Categorías') // Cambia 'Categories' a 'Categorías'
+                                .replace('Name', 'Nombre') // Cambia 'Categories' a 'Categorías'
                                 .replace('Supplier', 'Proveedor') // Cambia 'Supplier' a 'Proveedor'
                                 .replace('Type', 'Tipo'); // Cambia 'Type' a 'Tipo'
 
