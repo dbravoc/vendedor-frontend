@@ -286,22 +286,39 @@ const SalesManager = () => {
 
 
                     {/* Tabla pequeña para mostrar el total */}
-            <table className="mb-4">
-                <thead>
-                    <tr>
-                        <th>Total Final sin IVA</th>
-                        <th>Margen</th>
-                        <th>Comisión vendedor</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>{totalPriceFinalNoIVA.toFixed(0)}</td>
-                        <td>{totalMargen.toFixed(0)}</td>
-                        <td>{totalCommission.toFixed(0)}</td>
-                    </tr>
-                </tbody>
-            </table>
+{/*                     <table className="mb-4">
+                        <thead>
+                            <tr>
+                                <th>Total Final sin IVA</th>
+                                <th>Margen</th>
+                                <th>Comisión vendedor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{totalPriceFinalNoIVA.toFixed(0)}</td>
+                                <td>{totalMargen.toFixed(0)}</td>
+                                <td>{totalCommission.toFixed(0)}</td>
+                            </tr>
+                        </tbody>
+                    </table> */}
+                    {/* Tabla pequeña para mostrar el total */}
+                    <table className="mb-4 w-full max-w-md mx-auto border border-gray-200 rounded-lg shadow-lg">
+                    <thead>
+                        <tr className="bg-gray-100 text-gray-700 text-left">
+                        <th className="py-2 px-4 border-b border-gray-200">Total Final sin IVA</th>
+                        <th className="py-2 px-4 border-b border-gray-200">Margen</th>
+                        <th className="py-2 px-4 border-b border-gray-200">Comisión vendedor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr className="text-center text-gray-600">
+                        <td className="py-2 px-4 border-b border-gray-200">{totalPriceFinalNoIVA.toFixed(0)}</td>
+                        <td className="py-2 px-4 border-b border-gray-200">{totalMargen.toFixed(0)}</td>
+                        <td className="py-2 px-4 border-b border-gray-200">{totalCommission.toFixed(0)}</td>
+                        </tr>
+                    </tbody>
+                    </table>
 
 
 
