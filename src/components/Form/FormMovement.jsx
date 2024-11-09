@@ -91,7 +91,7 @@ const FormMovement = () => {
     const addRow = () => {
         setMovements([...movements, {
             product_id: '',
-            quantity: 0,
+            quantity: 1,
             discount: 0,
             price: 0,
         }]);
@@ -111,6 +111,7 @@ const FormMovement = () => {
                     product_id: movement.product_id,
                     quantity: movement.quantity,
                     discount: parseInt(movement.discount, 10),
+                    final_price: movement.price * movement.quantity * (1 - movement.discount / 100),
                     type: "venta",
                     seller: commonFields.seller,
                     client: commonFields.client,
@@ -151,7 +152,7 @@ const FormMovement = () => {
     return (
             <div className="bg-white min-h-screen w-full py-24 sm:py-32">
                 <div className="mx-auto w-full px-6 lg:px-8">
-                    <div className="mx-auto max-w-lg text-center mb-6">
+                    <div className="mx-auto max-w-lg text-left mb-6">
                         {successMessage && (
                             <div className="bg-green-100 text-green-800 p-4 rounded mb-4">
                                 {successMessage}
@@ -168,7 +169,7 @@ const FormMovement = () => {
                             Ingresar movimiento
                         </p>
                     </div>
-                    <div className="form-container max-w-7xl px-6 lg:px-8">
+                    <div className="movement-form-container max-w-7xl px-6 lg:px-8">
                         <form onSubmit={handleSubmit}>
                             {movements.map((movement, index) => (
                                 <div key={index} className="flex items-center space-x-4 mb-4">
@@ -239,7 +240,7 @@ const FormMovement = () => {
                                     )}
 
                                     {/* Precio Final */}
-                                    {movement.price > 0 && movement.discount > 0 && (
+                                    {movement.price > 0 && movement.quantity > 0 && (
                                         <div className="flex flex-col items-center ml-4">
                                             <span className="text-sm text-gray-600">Precio Final</span>
                                             <span className="text-xl text-gray-700">

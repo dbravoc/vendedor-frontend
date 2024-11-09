@@ -19,6 +19,7 @@ const Movimientos = () => {
 
   return (
     <div className="contenedorInicio" >
+      <div className="overflow-x-auto">
       <Header scrollPosition={scrollPosition} className="fixed-header" />
       <div className="cuerpo">
         <div className='Cabaña-Inicio' data-aos="fade-up">
@@ -27,6 +28,7 @@ const Movimientos = () => {
         <div className='outer-div-Footer'>
           <Footer />
         </div> 
+      </div>
       </div>
     </div>
   );

@@ -10,7 +10,7 @@ const SalesManager = () => {
     const [filters, setFilters] = useState({
         product: false,
         type: false,
-        commission: false,
+        commission_type: false,
         seller: false,
         supplier: false,
         client: false,
@@ -60,6 +60,11 @@ const SalesManager = () => {
 
 
     const calculatedMovements = movements.map((movement) => {
+        const name = productsData[movement.id]?.product?.name || "";
+        const commission_type = productsData[movement.id]?.product?.commission_type || "";
+        const supplier = productsData[movement.id]?.product?.suppliers?.name || "";
+        
+        
         const price = productsData[movement.id]?.product?.price || 0;
         const quantity = movement.quantity || 0;
         const discount = movement.discount || 0;
@@ -71,8 +76,6 @@ const SalesManager = () => {
         const margen = price_final_noiva - (unit_cost * quantity);
         const margen_porcentual = unit_cost ? (margen / (unit_cost * quantity)) * 100 : 0;
     
-        // Cálculo de la comisión basado en el tipo
-        const commission_type = movement.commission_type; // Asegúrate de que este campo existe en tus movimientos
         let commission_seller = 0; // Inicializa en 0
     
         if (commission_type === 'tienda') {
@@ -85,6 +88,9 @@ const SalesManager = () => {
     
         return {
             ...movement,
+            supplier,
+            commission_type,
+            name,
             price_total,
             price_final,
             price_final_noiva,
@@ -95,69 +101,6 @@ const SalesManager = () => {
         };
     });
     
-
-
-    // Función para ordenar los movimientos
-/*     const sortedMovements = [...calculatedMovements].sort((a, b) => {
-        let aValue = a[sortConfig.key];
-        let bValue = b[sortConfig.key];
-    
-        // Si es necesario, ajusta valores calculados específicos que pueden requerir una lógica adicional
-        if (sortConfig.key === 'price' && (aValue === undefined || bValue === undefined)) {
-            aValue = productsData[a.id]?.product?.price || 0;
-            bValue = productsData[b.id]?.product?.price || 0;
-        }
-    
-        // Comparación de valores (manejo de direcciones ascendentes y descendentes)
-        if (aValue < bValue) {
-            return sortConfig.direction === 'ascending' ? -1 : 1;
-        }
-        if (aValue > bValue) {
-            return sortConfig.direction === 'ascending' ? 1 : -1;
-        }
-        return 0;
-    }); */
-    
-/*     const sortedMovements = [...calculatedMovements]
-    .filter((movement) => {
-        const allFiltersUnchecked = Object.values(filters).every((isChecked) => !isChecked);
-        const productName = productsData[movement.id]?.product?.name?.toLowerCase() || '';
-        const seller = movement.seller?.toLowerCase() || '';
-        const type = movement.type?.toLowerCase() || '';
-        const commission = productsData[movement.id]?.product?.commission_type?.toLowerCase() || '';
-        const supplier = productsData[movement.id]?.product?.suppliers?.name?.toLowerCase() || '';
-        const client = movement.client?.toLowerCase() || '';
-        const lowerSearchTerm = searchTerm.toLowerCase();
-
-        // Si todos los filtros están desmarcados, busca en todos los campos
-        return (
-            (allFiltersUnchecked ||
-                (filters.product && productName.includes(lowerSearchTerm)) ||
-                (filters.seller && seller.includes(lowerSearchTerm)) ||
-                (filters.type && type.includes(lowerSearchTerm)) ||
-                (filters.commission && commission.includes(lowerSearchTerm)) ||
-                (filters.supplier && supplier.includes(lowerSearchTerm)) ||
-                (filters.client && client.includes(lowerSearchTerm))
-            )
-        );
-    })
-    .sort((a, b) => {
-        let aValue = a[sortConfig.key];
-        let bValue = b[sortConfig.key];
-
-        if (sortConfig.key === 'price' && (aValue === undefined || bValue === undefined)) {
-            aValue = productsData[a.id]?.product?.price || 0;
-            bValue = productsData[b.id]?.product?.price || 0;
-        }
-
-        if (aValue < bValue) {
-            return sortConfig.direction === 'ascending' ? -1 : 1;
-        }
-        if (aValue > bValue) {
-            return sortConfig.direction === 'ascending' ? 1 : -1;
-        }
-        return 0;
-    }); */
 
     const sortedMovements = useMemo(() => {
         return calculatedMovements
@@ -173,14 +116,14 @@ const SalesManager = () => {
                         ? // Si no hay filtros activos, busca en todos los campos
                           searchInAllFields(movement.product) ||
                           searchInAllFields(movement.type) ||
-                          searchInAllFields(movement.commission) ||
+                          searchInAllFields(movement.commission_type) ||
                           searchInAllFields(movement.seller) ||
                           searchInAllFields(movement.supplier) ||
                           searchInAllFields(movement.client)
                         : // Si hay filtros activos, aplica solo en los campos marcados
                           (filters.product && searchInAllFields(movement.product)) ||
                           (filters.type && searchInAllFields(movement.type)) ||
-                          (filters.commission && searchInAllFields(String(movement.commission))) ||
+                          (filters.commission_type && searchInAllFields(String(movement.commission_type))) ||
                           (filters.seller && searchInAllFields(movement.seller)) ||
                           (filters.supplier && searchInAllFields(movement.supplier)) ||
                           (filters.client && searchInAllFields(movement.client))
@@ -249,8 +192,8 @@ const SalesManager = () => {
                         <label className="flex items-center">
                             <input
                                 type="checkbox"
-                                checked={filters.commission}
-                                onChange={() => setFilters({ ...filters, commission: !filters.commission })}
+                                checked={filters.commission_type}
+                                onChange={() => setFilters({ ...filters, commission_type: !filters.commission_type })}
                                 className="mr-2"
                             />
                             Comisión
@@ -284,24 +227,6 @@ const SalesManager = () => {
                         </label>
                     </div>
 
-
-                    {/* Tabla pequeña para mostrar el total */}
-{/*                     <table className="mb-4">
-                        <thead>
-                            <tr>
-                                <th>Total Final sin IVA</th>
-                                <th>Margen</th>
-                                <th>Comisión vendedor</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>{totalPriceFinalNoIVA.toFixed(0)}</td>
-                                <td>{totalMargen.toFixed(0)}</td>
-                                <td>{totalCommission.toFixed(0)}</td>
-                            </tr>
-                        </tbody>
-                    </table> */}
                     {/* Tabla pequeña para mostrar el total */}
                     <table className="mb-4 w-full max-w-md mx-auto border border-gray-200 rounded-lg shadow-lg">
                     <thead>
@@ -323,88 +248,90 @@ const SalesManager = () => {
 
 
                     {/* Tabla de movimientos */}
-                    <table className="min-w-full border-collapse border border-gray-300">
-                        <thead>
-                            <tr>
-                                <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('id')}>
-                                    Producto {sortConfig.key === 'id' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
-                                </th>
-                                <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('type')}>
-                                    Tipo {sortConfig.key === 'type' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
-                                </th>
-                                <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('commission_type')}>
-                                    Comisión {sortConfig.key === 'commission_type' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
-                                </th>
-                                <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('seller')}>
-                                    Vendedor {sortConfig.key === 'seller' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
-                                </th>
-                                <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('quantity')}>
-                                    Cantidad {sortConfig.key === 'quantity' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
-                                </th>
-                                <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('price')}>
-                                    Valor unitario {sortConfig.key === 'price' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
-                                </th>
-                                <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('price_total')}>
-                                    Valor total sin descuento {sortConfig.key === 'price_total' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
-                                </th>
-                                <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('discount')}>
-                                    Descuento {sortConfig.key === 'discount' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
-                                </th>
-                                <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('price_final')}>
-                                    Valor final {sortConfig.key === 'price_final' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
-                                </th>
-                                <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('price_final_noiva')}>
-                                    Valor final sin IVA {sortConfig.key === 'price_final_noiva' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
-                                </th>
-                                <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('unit_cost')}>
-                                    Costo unitario {sortConfig.key === 'unit_cost' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
-                                </th>
-                                <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('margen')}>
-                                    Margen {sortConfig.key === 'margen' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
-                                </th>
-                                <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('margen_porcentual')}>
-                                    Margen porcentual {sortConfig.key === 'margen_porcentual' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
-                                </th>
-                                <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('commission_seller')}>
-                                    Comisión vendedor {sortConfig.key === 'commission_seller' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
-                                </th>
-                                <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('supplier')}>
-                                    Proveedor {sortConfig.key === 'supplier' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
-                                </th>
-                                <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('client')}>
-                                    Cliente {sortConfig.key === 'client' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
-                                </th>
-                                <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('date_time')}>
-                                    Fecha y Hora {sortConfig.key === 'date_time' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {sortedMovements.map((movement, index) => (
-                                <tr key={index}>
-                                    
-                                    <td className="border border-gray-300 p-2">{productsData[movement.id]?.product?.name || 'Cargando...'}</td>
-                                    <td className="border border-gray-300 p-2">{movement.type}</td>
-                                    <td className="border border-gray-300 p-2">{productsData[movement.id]?.product?.commission_type || 'Cargando...'}</td>
-                                    <td className="border border-gray-300 p-2">{movement.seller}</td>
-                                    <td className="border border-gray-300 p-2">{movement.quantity}</td>
-                                    <td className="border border-gray-300 p-2">{productsData[movement.id]?.product?.price || 'Cargando...'}</td>
-                                    <td className="border border-gray-300 p-2">{productsData[movement.id]?.product?.price*movement.quantity || 'Cargando...'}</td>
-                                    <td className="border border-gray-300 p-2">{movement.discount}%</td>
-                                    <td className="border border-gray-300 p-2">{movement.price_final ? movement.price_final.toFixed(0) : 'Cargando...'}</td>
-                                    <td className="border border-gray-300 p-2">{movement.price_final ? movement.price_final_noiva.toFixed(0) : 'Cargando...'}</td>
-                                    <td className="border border-gray-300 p-2">{productsData[movement.id]?.product?.unit_cost || 'Cargando...'}</td>
-                                    <td className="border border-gray-300 p-2">{movement.price_final ? movement.margen.toFixed(0) : 'Cargando...'}</td>
-                                    <td className="border border-gray-300 p-2">{movement.price_final ? movement.margen_porcentual.toFixed(0) : 'Cargando...'}%</td>
-
-                                    <td className="border border-gray-300 p-2">{movement.commission_seller.toFixed(0)}</td>
-                                    <td className="border border-gray-300 p-2">{productsData[movement.id]?.product?.suppliers.name || 'Cargando...'}</td>
-                                    <td className="border border-gray-300 p-2">{movement.client}</td>
-                                    <td className="border border-gray-300 p-2">{movement.date_time ? format(new Date(movement.date_time), 'dd/MM/yyyy - HH:mm') : 'Cargando...'}</td>
+                    
+                        <table className="text-xs border-2 w-full">
+                            <thead>
+                                <tr>
+                                    <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('name')}>
+                                        Producto {sortConfig.key === 'name' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
+                                    </th>
+                                    <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('type')}>
+                                        Tipo {sortConfig.key === 'type' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
+                                    </th>
+                                    <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('commission_type')}>
+                                        Comisión {sortConfig.key === 'commission_type' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
+                                    </th>
+                                    <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('seller')}>
+                                        Vendedor {sortConfig.key === 'seller' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
+                                    </th>
+                                    <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('quantity')}>
+                                        Cantidad {sortConfig.key === 'quantity' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
+                                    </th>
+                                    <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('price')}>
+                                        Valor unitario {sortConfig.key === 'price' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
+                                    </th>
+                                    <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('price_total')}>
+                                        Valor total sin descuento {sortConfig.key === 'price_total' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
+                                    </th>
+                                    <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('discount')}>
+                                        Descuento {sortConfig.key === 'discount' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
+                                    </th>
+                                    <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('price_final')}>
+                                        Valor final {sortConfig.key === 'price_final' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
+                                    </th>
+                                    <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('price_final_noiva')}>
+                                        Valor final sin IVA {sortConfig.key === 'price_final_noiva' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
+                                    </th>
+                                    <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('unit_cost')}>
+                                        Costo unitario {sortConfig.key === 'unit_cost' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
+                                    </th>
+                                    <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('margen')}>
+                                        Margen {sortConfig.key === 'margen' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
+                                    </th>
+                                    <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('margen_porcentual')}>
+                                        Margen porcentual {sortConfig.key === 'margen_porcentual' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
+                                    </th>
+                                    <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('commission_seller')}>
+                                        Comisión vendedor {sortConfig.key === 'commission_seller' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
+                                    </th>
+                                    <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('supplier')}>
+                                        Proveedor {sortConfig.key === 'supplier' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
+                                    </th>
+                                    <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('client')}>
+                                        Cliente {sortConfig.key === 'client' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
+                                    </th>
+                                    <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('date_time')}>
+                                        Fecha y Hora {sortConfig.key === 'date_time' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
+                                    </th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {sortedMovements.map((movement, index) => (
+                                    <tr key={index}>
+                                        
+                                        <td className="border border-gray-300 p-2">{productsData[movement.id]?.product?.name || 'Cargando...'}</td>
+                                        <td className="border border-gray-300 p-2">{movement.type}</td>
+                                        <td className="border border-gray-300 p-2">{productsData[movement.id]?.product?.commission_type || 'Cargando...'}</td>
+                                        <td className="border border-gray-300 p-2">{movement.seller}</td>
+                                        <td className="border border-gray-300 p-2">{movement.quantity}</td>
+                                        <td className="border border-gray-300 p-2">{productsData[movement.id]?.product?.price || 'Cargando...'}</td>
+                                        <td className="border border-gray-300 p-2">{productsData[movement.id]?.product?.price*movement.quantity || 'Cargando...'}</td>
+                                        <td className="border border-gray-300 p-2">{movement.discount}%</td>
+                                        <td className="border border-gray-300 p-2">{movement.price_final ? movement.price_final.toFixed(0) : 'Cargando...'}</td>
+                                        <td className="border border-gray-300 p-2">{movement.price_final ? movement.price_final_noiva.toFixed(0) : 'Cargando...'}</td>
+                                        <td className="border border-gray-300 p-2">{productsData[movement.id]?.product?.unit_cost || 'Cargando...'}</td>
+                                        <td className="border border-gray-300 p-2">{movement.price_final ? movement.margen.toFixed(0) : 'Cargando...'}</td>
+                                        <td className="border border-gray-300 p-2">{movement.price_final ? movement.margen_porcentual.toFixed(0) : 'Cargando...'}%</td>
+
+                                        <td className="border border-gray-300 p-2">{movement.commission_seller.toFixed(0)}</td>
+                                        <td className="border border-gray-300 p-2">{productsData[movement.id]?.product?.suppliers.name || 'Cargando...'}</td>
+                                        <td className="border border-gray-300 p-2">{movement.client}</td>
+                                        <td className="border border-gray-300 p-2">{movement.date_time ? format(new Date(movement.date_time), 'dd/MM/yyyy - HH:mm') : 'Cargando...'}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    
                 </div>
             </div>
         </div>
