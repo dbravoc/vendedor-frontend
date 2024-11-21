@@ -101,18 +101,36 @@ const SalesManager = () => {
         };
     });
     
-
+    
     const sortedMovements = useMemo(() => {
         return calculatedMovements
             .filter((movement) => {
                 const isEmptyFilter = Object.values(filters).every((value) => !value);
     
-                // Realiza la búsqueda en todos los campos si no hay filtros seleccionados
+                // Función para buscar en todos los campos
                 const searchInAllFields = (field) =>
-                    field?.toLowerCase().includes(searchTerm.toLowerCase());
+                    field?.toString().toLowerCase().includes(searchTerm.toLowerCase());
+                
+                // Verificar si el movimiento está dentro del rango de fechas
+                const isWithinDateRange = () => {
+                    if (!filters.startDate && !filters.endDate) return true; // No hay filtro de fecha
+                    const movementDate = new Date(movement.date_time); // Convertir la fecha del movimiento
+                    
+                    const startDate = filters.startDate ? new Date(filters.startDate) : null;
+                    const endDate = filters.endDate ? new Date(filters.endDate) : null;
     
+                    // Comparar con el rango
+                    return (
+                        (!startDate || movementDate >= startDate) &&
+                        (!endDate || movementDate <= endDate)
+                    );
+                };
+                
+                const isEmptyFilter2 = !(filters.product || filters.type || filters.commission_type || filters.seller || filters.supplier || filters.client)
                 return (
-                    isEmptyFilter
+                    
+                    isWithinDateRange() && // Filtrar por fecha
+                    (isEmptyFilter2
                         ? // Si no hay filtros activos, busca en todos los campos
                           searchInAllFields(movement.product) ||
                           searchInAllFields(movement.type) ||
@@ -126,7 +144,7 @@ const SalesManager = () => {
                           (filters.commission_type && searchInAllFields(String(movement.commission_type))) ||
                           (filters.seller && searchInAllFields(movement.seller)) ||
                           (filters.supplier && searchInAllFields(movement.supplier)) ||
-                          (filters.client && searchInAllFields(movement.client))
+                          (filters.client && searchInAllFields(movement.client)))
                 );
             })
             .sort((a, b) => {
@@ -139,20 +157,32 @@ const SalesManager = () => {
                 }
     
                 return sortConfig.direction === 'ascending'
-                    ? aValue < bValue ? -1 : aValue > bValue ? 1 : 0
-                    : aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
+                    ? aValue < bValue
+                        ? -1
+                        : aValue > bValue
+                        ? 1
+                        : 0
+                    : aValue > bValue
+                    ? -1
+                    : aValue < bValue
+                    ? 1
+                    : 0;
             });
     }, [searchTerm, filters, calculatedMovements, sortConfig, productsData]);
+    
     
 
     // Calcular la suma total de `price_final_noiva` en movimientos filtrados
     const totalPriceFinalNoIVA = sortedMovements.reduce((sum, movement) => sum + movement.price_final_noiva, 0);
+    const totalPriceFinalIVA = sortedMovements.reduce((sum, movement) => sum + movement.unit_cost*movement.quantity, 0);
+    const totalCost = sortedMovements.reduce((sum, movement) => sum + movement.price_final, 0);
     const totalMargen = sortedMovements.reduce((sum, movement) => sum + (movement.margen || 0), 0);
     const totalCommission = sortedMovements.reduce((sum, movement) => sum + (movement.commission_seller || 0), 0);
 
 
     if (isLoading) return <p>Cargando...</p>;
     if (error) return <p>Error: {error}</p>;
+
     return (
         <div className="bg-white min-h-screen w-screen py-24 sm:py-32">
             <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -169,8 +199,31 @@ const SalesManager = () => {
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="mb-4 p-2 border border-gray-300 rounded"
                     />
-                    
-                    <div className="flex flex-row space-x-4">
+
+                    {/* Filtro por fechas */}
+                    <div className="flex flex-row space-x-4 mt-4">
+                        <label className="flex flex-col">
+                            Fecha Inicio:
+                            <input
+                                type="date"
+                                value={filters.startDate || ''}
+                                onChange={(e) => setFilters({ ...filters, startDate: e.target.value })}
+                                className="p-2 border border-gray-300 rounded"
+                            />
+                        </label>
+                        <label className="flex flex-col">
+                            Fecha Fin:
+                            <input
+                                type="date"
+                                value={filters.endDate || ''}
+                                onChange={(e) => setFilters({ ...filters, endDate: e.target.value })}
+                                className="p-2 border border-gray-300 rounded"
+                            />
+                        </label>
+                    </div>
+
+                    {/* Filtros adicionales */}
+                    <div className="flex flex-row space-x-4 mt-4">
                         <label className="flex items-center">
                             <input
                                 type="checkbox"
@@ -227,20 +280,25 @@ const SalesManager = () => {
                         </label>
                     </div>
 
+
                     {/* Tabla pequeña para mostrar el total */}
-                    <table className="mb-4 w-full max-w-md mx-auto border border-gray-200 rounded-lg shadow-lg">
+                    <table className="mb-4 w-full max-w-md ml-0 border border-gray-200 rounded-lg shadow-lg">
                     <thead>
                         <tr className="bg-gray-100 text-gray-700 text-left">
                         <th className="py-2 px-4 border-b border-gray-200">Total Final sin IVA</th>
+                        <th className="py-2 px-4 border-b border-gray-200">Total Final con IVA</th>
+                        <th className="py-2 px-4 border-b border-gray-200">Costo</th>
                         <th className="py-2 px-4 border-b border-gray-200">Margen</th>
                         <th className="py-2 px-4 border-b border-gray-200">Comisión vendedor</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr className="text-center text-gray-600">
-                        <td className="py-2 px-4 border-b border-gray-200">{totalPriceFinalNoIVA.toFixed(0)}</td>
-                        <td className="py-2 px-4 border-b border-gray-200">{totalMargen.toFixed(0)}</td>
-                        <td className="py-2 px-4 border-b border-gray-200">{totalCommission.toFixed(0)}</td>
+                        <tr className="text-left text-gray-600">
+                        <td className="py-2 px-4 border-b border-gray-200">${Number(totalPriceFinalNoIVA.toFixed(0)).toLocaleString('es-CL')}</td>
+                        <td className="py-2 px-4 border-b border-gray-200">${Number(totalPriceFinalIVA.toFixed(0)).toLocaleString('es-CL')}</td>
+                        <td className="py-2 px-4 border-b border-gray-200">${Number(totalCost.toFixed(0)).toLocaleString('es-CL')}</td>
+                        <td className="py-2 px-4 border-b border-gray-200">${Number(totalMargen.toFixed(0)).toLocaleString('es-CL')}</td>
+                        <td className="py-2 px-4 border-b border-gray-200">${Number(totalCommission.toFixed(0)).toLocaleString('es-CL')}</td>
                         </tr>
                     </tbody>
                     </table>
@@ -314,16 +372,16 @@ const SalesManager = () => {
                                         <td className="border border-gray-300 p-2">{productsData[movement.id]?.product?.commission_type || 'Cargando...'}</td>
                                         <td className="border border-gray-300 p-2">{movement.seller}</td>
                                         <td className="border border-gray-300 p-2">{movement.quantity}</td>
-                                        <td className="border border-gray-300 p-2">{productsData[movement.id]?.product?.price || 'Cargando...'}</td>
-                                        <td className="border border-gray-300 p-2">{productsData[movement.id]?.product?.price*movement.quantity || 'Cargando...'}</td>
+                                        <td className="border border-gray-300 p-2">${productsData[movement.id]?.product?.price !== undefined? Number(productsData[movement.id]?.product?.price).toLocaleString('es-CL'): 'Cargando...'}</td>
+                                        <td className="border border-gray-300 p-2">{productsData[movement.id]?.product?.price !== undefined && movement.quantity !== undefined? `$${(productsData[movement.id]?.product?.price * movement.quantity).toLocaleString('es-CL')}`: 'Cargando...'}</td>
                                         <td className="border border-gray-300 p-2">{movement.discount}%</td>
-                                        <td className="border border-gray-300 p-2">{movement.price_final ? movement.price_final.toFixed(0) : 'Cargando...'}</td>
-                                        <td className="border border-gray-300 p-2">{movement.price_final ? movement.price_final_noiva.toFixed(0) : 'Cargando...'}</td>
-                                        <td className="border border-gray-300 p-2">{productsData[movement.id]?.product?.unit_cost || 'Cargando...'}</td>
-                                        <td className="border border-gray-300 p-2">{movement.price_final ? movement.margen.toFixed(0) : 'Cargando...'}</td>
+                                        <td className="border border-gray-300 p-2">${movement.price_final !== undefined? Number(movement.price_final.toFixed(0)).toLocaleString('es-CL'): 'Cargando...'}</td>
+                                        <td className="border border-gray-300 p-2">${movement.price_final_noiva !== undefined? Number(movement.price_final_noiva.toFixed(0)).toLocaleString('es-CL'): 'Cargando...'}</td>
+                                        <td className="border border-gray-300 p-2">${productsData[movement.id]?.product?.unit_cost !== undefined? Number(productsData[movement.id]?.product?.unit_cost).toLocaleString('es-CL'): 'Cargando...'}</td>
+                                        <td className="border border-gray-300 p-2">${movement.margen !== undefined? Number(movement.margen.toFixed(0)).toLocaleString('es-CL'): 'Cargando...'}</td>
                                         <td className="border border-gray-300 p-2">{movement.price_final ? movement.margen_porcentual.toFixed(0) : 'Cargando...'}%</td>
 
-                                        <td className="border border-gray-300 p-2">{movement.commission_seller.toFixed(0)}</td>
+                                        <td className="border border-gray-300 p-2">${Number(movement.commission_seller.toFixed(0)).toLocaleString('es-CL')}</td>
                                         <td className="border border-gray-300 p-2">{productsData[movement.id]?.product?.suppliers.name || 'Cargando...'}</td>
                                         <td className="border border-gray-300 p-2">{movement.client}</td>
                                         <td className="border border-gray-300 p-2">{movement.date_time ? format(new Date(movement.date_time), 'dd/MM/yyyy - HH:mm') : 'Cargando...'}</td>

@@ -8,7 +8,9 @@ import Footer from '../components/Footer/Footer';
 const AgregarProducto = () => {
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-
+    const [suppliers, setSuppliers] = useState([]);
+    const [isPlant, setIsPlant] = useState(false);
+    const [isPot, setIsPot] = useState(false);
     const [{ y }] = useWindowScroll();
     const [scrollPosition, setScrollPosition] = useState(0);
   
@@ -32,14 +34,41 @@ const AgregarProducto = () => {
         commission: '',
         supplier: '',
         consignment: false,
+        min_diameter: '',
+        max_diameter: '',
+        pot_diameter: '',
     });
 
+    // Fetch para obtener la lista de proveedores
+    useEffect(() => {
+        const fetchSuppliers = async () => {
+            try {
+                const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/suppliers`);
+                if (!response.ok) {
+                    throw new Error('Error al obtener proveedores');
+                }
+                const data = await response.json();
+                setSuppliers(data.data || []); // Asume que los proveedores están en la propiedad `data`
+            } catch (error) {
+                console.error('Error al obtener proveedores:', error);
+                setErrorMessage('No se pudo cargar la lista de proveedores');
+                setTimeout(() => setErrorMessage(''), 5000);
+            }
+        };
+        fetchSuppliers();
+    }, []);
+
     const handleChange = (e) => {
-        const { name, value } = e.target;
+        const { name, value, type, checked  } = e.target;
         setProduct({
             ...product,
             [name]: name === 'consignment' ? e.target.checked : value,
+            [name]: type === "checkbox" ? checked : value,
         });
+        if (name === "type") {
+            setIsPlant(value === "planta");
+            setIsPot(value === 'macetero');
+        }
     };
 
     const handleCategoriesChange = (e) => {
@@ -48,6 +77,7 @@ const AgregarProducto = () => {
     };
 
     const handleSubmit = async (e) => {
+
         e.preventDefault();
         try {
             const dataToSend = {
@@ -55,15 +85,18 @@ const AgregarProducto = () => {
                 sku: product.sku,
                 description: product.description,
                 type: product.type,
-                categories: product.categories.toLowerCase().replace(/\s+/g, ''), // Elimina espacios y convierte a minúsculas
-                initial_quantity: parseInt(product.initial_quantity, 10),
-                unit_cost: parseFloat(product.unit_cost),
-                price: parseFloat(product.price),
+                categories: product.categories.toLowerCase().replace(/\s+/g, ''),
+                initial_quantity: product.initial_quantity ? parseInt(product.initial_quantity, 10) : null,
+                unit_cost: product.unit_cost ? parseFloat(product.unit_cost) : null,
+                price: product.price ? parseFloat(product.price) : null,
                 commission_type: product.commission_type,
-                commission: parseFloat(product.commission),
-                supplier: product.supplier,
+                commission: product.commission ? parseFloat(product.commission) : null,
+                supplier_id: product.supplier,
                 image: product.image,
                 consignment: product.consignment,
+                min_diameter: isPlant && product.min_diameter ? parseFloat(product.min_diameter) : null,
+                max_diameter: isPlant && product.max_diameter ? parseFloat(product.max_diameter) : null,
+                pot_diameter: isPot && product.pot_diameter ? parseFloat(product.pot_diameter) : null,
             };
             const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/products`, {
                 method: 'POST',
@@ -85,10 +118,11 @@ const AgregarProducto = () => {
         } catch (error) {
             console.error(error);
             setErrorMessage(`Ocurrió un error al agregar el producto`);
-            setSuccessMessage(''); // Limpia el mensaje de éxito si ocurrió un error
-            setTimeout(() => setErrorMessage(''), 10000); // Oculta el mensaje de error después de 3 segundos
+            setSuccessMessage('');
+            setTimeout(() => setErrorMessage(''), 10000);
         }
     };
+
 
     return (
         <div className="contenedorInicio" >
@@ -127,7 +161,6 @@ const AgregarProducto = () => {
                             placeholder="SKU del producto"
                             value={product.sku}
                             onChange={handleChange}
-                            required
                         />
                         <textarea
                             name="description"
@@ -142,15 +175,47 @@ const AgregarProducto = () => {
                             onChange={(e) => handleChange({ target: { name: 'type', value: e.target.value.toLowerCase() } })} // Convertir a minúsculas
                             required
                         >
-                            <option value="">Tipo de producto</option>
+                            <option value="">Categoría</option>
                             <option value="planta">Planta</option>
                             <option value="macetero">Macetero</option>
-                            <option value="otros">Otros</option>
+                            <option value="sustratos, abonos y bioestimulantes">Sustratos, abonos y bioestimulantes</option>
+                            <option value="productos ecologicos">Productos ecológicos</option>
+                            <option value="tienda colaborativa">Tienda colaborativa</option>
                         </select>
+                        {isPlant && (
+                            <>
+                                <input
+                                    type="number"
+                                    name="min_diameter"
+                                    placeholder="Diámetro mínimo"
+                                    value={product.min_diameter}
+                                    onChange={handleChange}
+                                    required
+                                />
+                                <input
+                                    type="number"
+                                    name="max_diameter"
+                                    placeholder="Diámetro máximo"
+                                    value={product.max_diameter}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </>
+                        )}
+                        {isPot && (
+                            <input
+                                type="number"
+                                name="pot_diameter"
+                                placeholder="Diámetro del macetero"
+                                value={product.pot_diameter}
+                                onChange={handleChange}
+                            />
+                        )}
+
                         <input
                             type="text"
                             name="categories"
-                            placeholder="Categorías (Separadas por comas)"
+                            placeholder="Filtros (Separados por comas)"
                             value={product.categories}
                             onChange={handleCategoriesChange}
                         />
@@ -194,21 +259,22 @@ const AgregarProducto = () => {
                             onChange={handleChange}
                             required
                         />
-                        <input
-                            type="text"
-                            name="supplier"
-                            placeholder="Proveedor"
-                            value={product.supplier}
-                            onChange={handleChange}
-                            required
-                        />
+
+                        <label>Proveedor:</label>
+                        <select name="supplier" value={product.supplier} onChange={handleChange} required>
+                            <option value="" disabled>Seleccione un proveedor</option>
+                            {suppliers.map((supplier) => (
+                                <option key={supplier.id} value={supplier.id}>
+                                    {supplier.name}
+                                </option>
+                            ))}
+                        </select>
                         <input
                             type="text"
                             name="image"
                             placeholder="Imágenes (links separados por coma)"
                             value={product.image}
                             onChange={handleChange}
-                            required
                         />
                         <label>
                             <input

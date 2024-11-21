@@ -10,6 +10,7 @@ import Inventario from './pages/Inventario';
 import Login from './components/Login/CardLogin';
 import CreateProductos from './pages/CreateProductos';
 import Movimientos from './pages/Movimientos';
+import CargaMasivaProductos from './pages/CargaMasivaProductos';
 import CreateMovement from './pages/CreateMovement';
 
 const ScrollToTop = () => {
@@ -67,6 +68,7 @@ function App() {
           <Route path="/inicio" element={<ProtectedRoute><Inicio /></ProtectedRoute>} />
           <Route path="/productos" element={<ProtectedRoute><Productos /></ProtectedRoute>} />
           <Route path="/agregarProducto" element={<ProtectedRoute><CreateProductos /></ProtectedRoute>} />
+          <Route path="/CargaMasivaProductos" element={<ProtectedRoute><CargaMasivaProductos /></ProtectedRoute>} />
           <Route path="/inventario" element={<ProtectedRoute><Inventario /></ProtectedRoute>} />
           <Route path="/movimientos" element={<ProtectedRoute><Movimientos /></ProtectedRoute>} />
           <Route path="/nuevo_movimiento" element={<ProtectedRoute><CreateMovement /></ProtectedRoute>} />

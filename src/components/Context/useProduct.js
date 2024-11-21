@@ -51,6 +51,7 @@ const useProducts = () => {
     };
 
     const handleSaveProduct = async (id) => {
+        console.log("llego hasta handle save product")
         try {
             const response = await fetch(`${backendUrl}/api/products/${id}`, {
                 method: 'PUT',
