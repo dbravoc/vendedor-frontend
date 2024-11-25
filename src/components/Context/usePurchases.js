@@ -1,17 +1,17 @@
 import { useState, useEffect } from 'react';
 
-const useMovements = () => {
-    const [movements, setMovements] = useState([]);
+const usePurchases = () => {
+    const [purchases, setPurchases] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
     const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
     useEffect(() => {
-        const fetchMovements = async () => {
+        const fetchPurchases = async () => {
             try {
                 setIsLoading(true);
-                const response = await fetch(`${backendUrl}/api/inventory/movements`);
+                const response = await fetch(`${backendUrl}/api/purchases`);
                 
                 if (!response.ok) {
                     const errorText = await response.text(); // Obtener texto de error
@@ -21,27 +21,27 @@ const useMovements = () => {
                 const contentType = response.headers.get("content-type");
                 if (contentType && contentType.indexOf("application/json") !== -1) {
                     const data = await response.json();
-                    setMovements(data.data); // Asigna la data de movimientos
+                    setPurchases(data.data); // Asigna la data de compras
                     setError(null);
                 } else {
                     throw new Error('La respuesta no es un JSON válido.');
                 }
             } catch (err) {
-                console.error('Error al obtener los movimientos:', err);
+                console.error('Error al obtener las compras:', err);
                 setError(err.message);
             } finally {
                 setIsLoading(false);
             }
         };
 
-        fetchMovements();
+        fetchPurchases();
     }, [backendUrl]);
 
     return {
-        movements,
+        purchases,
         isLoading,
         error,
     };
 };
 
-export default useMovements;
+export default usePurchases;
