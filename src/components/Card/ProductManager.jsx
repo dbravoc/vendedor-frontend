@@ -17,11 +17,17 @@ const ProductManager = () => {
     } = useProducts();
 
     const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
+    const [localProducts, setLocalProducts] = useState(products || []); // Usar un estado local
+    // Función para obtener el valor de una propiedad anidada
+    const getNestedValue = (obj, key) => {
+        return key.split('.').reduce((acc, part) => acc?.[part], obj);
+    };
 
+    // Ordenar los productos
     const sortedProducts = [...products].sort((a, b) => {
         if (sortConfig.key) {
-            const aValue = a[sortConfig.key];
-            const bValue = b[sortConfig.key];
+            const aValue = getNestedValue(a, sortConfig.key);
+            const bValue = getNestedValue(b, sortConfig.key);
 
             if (aValue < bValue) {
                 return sortConfig.direction === 'asc' ? -1 : 1;
@@ -33,17 +39,69 @@ const ProductManager = () => {
         return 0;
     });
 
+    // Función para manejar la ordenación
     const handleSort = (key) => {
         let direction = 'asc';
         if (sortConfig.key === key && sortConfig.direction === 'asc') {
             direction = 'desc';
         }
         setSortConfig({ key, direction });
+
+        // Aquí hacemos la ordenación al recibir el clic en la columna
+        const sortedData = [...localProducts].sort((a, b) => {
+            let aValue, bValue;
+
+            // Manejar casos especiales como suppliers.name
+            if (key === 'suppliers.name') {
+                aValue = a.suppliers?.name || ''; // Maneja valores nulos
+                bValue = b.suppliers?.name || ''; // Maneja valores nulos
+            } else {
+                aValue = a[key];
+                bValue = b[key];
+            }
+
+            // Comparación de valores
+            if (aValue < bValue) return direction === 'asc' ? -1 : 1;
+            if (aValue > bValue) return direction === 'asc' ? 1 : -1;
+            return 0;
+        });
+
+        // Actualizar productos ordenados
+        setLocalProducts(sortedData);
+    };
+
+    const handleInputChangeWithBool = (e, id) => {
+        const { name, value } = e.target;
+
+        let transformedValue = value;
+
+        // Transformar "Si" o "No" a booleano para el campo "consignment"
+        if (name === 'consignment') {
+            transformedValue = value.trim().toLowerCase() === 'si' ? true : value.trim().toLowerCase() === 'no' ? false : value;
+        }
+
+        handleInputChange({ target: { name, value: transformedValue } }, id);
+    };
+
+    const handleSaveProductWithBool = (id) => {
+        const productData = { ...formData[id] };
+
+        // Asegurar que "consignment" sea booleano antes de guardar
+        if (typeof productData.consignment !== 'boolean') {
+            productData.consignment =
+                productData.consignment.trim().toLowerCase() === 'si'
+                    ? true
+                    : productData.consignment.trim().toLowerCase() === 'no'
+                    ? false
+                    : productData.consignment;
+        }
+
+        handleSaveProduct(id, productData);
     };
 
     if (isLoading) return <p>Cargando...</p>;
     if (error) return <p>Error: {error}</p>;
-console.log(products[5].range_pot_diameter_max)
+
     return (
         <div className="bg-white min-h-screen w-screen py-24 sm:py-32">
             <div className="mx-auto px-6 lg:px-8 mx-auto">
@@ -65,20 +123,26 @@ console.log(products[5].range_pot_diameter_max)
                         <table className='text-xs border-2 w-full'>
                             <thead className='border-2'>
                                 <tr>
-                                    <th onClick={() => handleSort('name')} className="px-2 cursor-pointer">Nombre</th>
-                                    <th onClick={() => handleSort('description')} className="px-2 cursor-pointer">Descripción</th>
-                                    <th onClick={() => handleSort('type')} className="px-2 cursor-pointer">Categorías</th>
-                                    <th onClick={() => handleSort('categories')} className="px-2 cursor-pointer">Filtros</th>
-                                    <th onClick={() => handleSort('suppliers')} className="px-2 cursor-pointer">Proveedor</th>
-                                    <th onClick={() => handleSort('price')} className="px-2 cursor-pointer">Precio</th>
-                                    <th onClick={() => handleSort('unit_cost')} className="px-2 cursor-pointer">Costo Unitario</th>
-                                    <th onClick={() => handleSort('initial_quantity')} className="px-2 cursor-pointer">Cantidad Inicial</th>
-                                    <th onClick={() => handleSort('commission_type')} className="px-2 cursor-pointer">Tipo de Comisión</th>
-                                    <th onClick={() => handleSort('commission')} className="px-2 cursor-pointer">% de Comisión</th>
-                                    <th onClick={() => handleSort('consignment')} className="px-2 cursor-pointer">Consignación</th>
-                                    <th onClick={() => handleSort('image_1')} className="px-2 cursor-pointer">Imagen</th>
-                                    <th onClick={() => handleSort('diameter_min')} className="px-2 cursor-pointer">Diametro Min</th>
-                                    <th onClick={() => handleSort('diameter_max')} className="px-2 cursor-pointer">Diametro Max</th>
+                                    <th onClick={() => handleSort('name')} className="px-2 cursor-pointer">Nombre {sortConfig.key === 'name' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : null}</th>
+                                    <th onClick={() => handleSort('description')} className="px-2 cursor-pointer">Descripción {sortConfig.key === 'description' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : null}</th>
+                                    <th onClick={() => handleSort('type')} className="px-2 cursor-pointer">Categorías {sortConfig.key === 'type' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : null}</th>
+                                    <th onClick={() => handleSort('categories')} className="px-2 cursor-pointer">Filtros {sortConfig.key === 'categories' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : null}</th>
+                                    <th
+    onClick={() => handleSort('suppliers.name')}
+    className="px-2 cursor-pointer"
+>
+    Proveedor {sortConfig.key === 'suppliers.name' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : null}
+</th>
+                                    <th onClick={() => handleSort('price')} className="px-2 cursor-pointer">Precio {sortConfig.key === 'price' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : null}</th>
+                                    <th onClick={() => handleSort('unit_cost')} className="px-2 cursor-pointer">Costo Unitario {sortConfig.key === 'unit_cost' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : null}</th>
+                                    <th onClick={() => handleSort('initial_quantity')} className="px-2 cursor-pointer">Cantidad Inicial {sortConfig.key === 'initial_quantity' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : null}</th>
+                                    <th onClick={() => handleSort('commission_type')} className="px-2 cursor-pointer">Tipo de Comisión {sortConfig.key === 'commission_type' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : null}</th>
+                                    <th onClick={() => handleSort('commission')} className="px-2 cursor-pointer">% de Comisión {sortConfig.key === 'commission' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : null}</th>
+                                    <th onClick={() => handleSort('consignment')} className="px-2 cursor-pointer">Consignación {sortConfig.key === 'consignment' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : null}</th>
+                                    <th onClick={() => handleSort('image_1')} className="px-2 cursor-pointer">Imagen {sortConfig.key === 'image_1' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : null}</th>
+                                    <th onClick={() => handleSort('range_pot_diameter_min')} className="px-2 cursor-pointer">Diametro Min {sortConfig.key === 'range_pot_diameter_min' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : null}</th>
+                                    <th onClick={() => handleSort('range_pot_diameter_max')} className="px-2 cursor-pointer">Diametro Max {sortConfig.key === 'range_pot_diameter_max' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : null}</th>
+                                    <th onClick={() => handleSort('pot_diameter')} className="px-2 cursor-pointer">Diametro {sortConfig.key === 'pot_diameter' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : null}</th>
                                     <th className="px-2">Acciones</th>
                                 </tr>
                             </thead>
@@ -127,7 +191,7 @@ console.log(products[5].range_pot_diameter_max)
                                                         type="text"
                                                         name="suppliers"
                                                         className="w-full bg-blue-100"
-                                                        value={formData[product.id]?.suppliers.name || product.suppliers.name}
+                                                        value={formData[product.id]?.suppliers?.name || product.suppliers.name}
                                                         onChange={(e) => handleInputChange(e, product.id)}
                                                     />
                                                 </td>
@@ -176,19 +240,15 @@ console.log(products[5].range_pot_diameter_max)
                                                         onChange={(e) => handleInputChange(e, product.id)}
                                                     />
                                                 </td>
-                                                <td className="px-2 bg-blue-100 border-2">
-                                                    <input
-                                                        type="text"
+                                                    <select
                                                         name="consignment"
                                                         className="w-full bg-blue-100"
-                                                        value={
-                                                            (formData[product.id]?.consignment ?? product.consignment) 
-                                                                ? "Sí" 
-                                                                : "No"
-                                                        }
-                                                        onChange={(e) => handleInputChange(e, product.id)}
-                                                    />
-                                                </td>
+                                                        value={(formData[product.id]?.consignment ?? product.consignment) ? "Si" : "No"}
+                                                        onChange={(e) => handleInputChangeWithBool(e, product.id)}
+                                                    >
+                                                        <option value="Si">Sí</option>
+                                                        <option value="No">No</option>
+                                                    </select>
                                                 <td className="px-2 bg-blue-100 border-2">
                                                     <input
                                                         type="text"
@@ -201,7 +261,7 @@ console.log(products[5].range_pot_diameter_max)
                                                 <td className="px-2 bg-blue-100 border-2">
                                                     <input
                                                         type="number"
-                                                        name="diameter_min"
+                                                        name="range_pot_diameter_min"
                                                         className="w-full bg-blue-100"
                                                         value={formData[product.id]?.range_pot_diameter_min || product.range_pot_diameter_min}
                                                         onChange={(e) => handleInputChange(e, product.id)}
@@ -210,15 +270,24 @@ console.log(products[5].range_pot_diameter_max)
                                                 <td className="px-2 bg-blue-100 border-2">
                                                     <input
                                                         type="number"
-                                                        name="diameter_max"
+                                                        name="range_pot_diameter_max"
                                                         className="w-full bg-blue-100"
                                                         value={formData[product.id]?.range_pot_diameter_max || product.range_pot_diameter_max}
                                                         onChange={(e) => handleInputChange(e, product.id)}
                                                     />
                                                 </td>
+                                                <td className="px-2 bg-blue-100 border-2">
+                                                    <input
+                                                        type="number"
+                                                        name="pot_diameter"
+                                                        className="w-full bg-blue-100"
+                                                        value={formData[product.id]?.pot_diameter || product.pot_diameter}
+                                                        onChange={(e) => handleInputChange(e, product.id)}
+                                                    />
+                                                </td>
                                             
                                                 <td className="px-2 text-center space-x-4 bg-blue-100 border-2">
-                                                    <button onClick={() => handleSaveProduct(product.id)}>
+                                                    <button onClick={() => handleSaveProductWithBool(product.id)}>
                                                         <FontAwesomeIcon className='text-green-600' icon={faCircleCheck} />
                                                     </button>
                                                     <button onClick={() => setEditingProductId(null)}>
@@ -238,10 +307,11 @@ console.log(products[5].range_pot_diameter_max)
                                                 <td className="px-2 border-2">{product.initial_quantity}</td>
                                                 <td className="px-2 border-2">{product.commission_type}</td>
                                                 <td className="px-2 border-2">{product.commission}%</td>
-                                                <td className="px-2 border-2">{product.consignment ? "Sí" : "No"}</td>
+                                                <td className="px-2 border-2">{product.consignment ? "Si" : "No"}</td>
                                                 <td className="px-2 border-2">{product.image_1 ? 'Cargada' : 'Pendiente'}</td>
                                                 <td className="px-2 border-2">{product.range_pot_diameter_min}</td>
                                                 <td className="px-2 border-2">{product.range_pot_diameter_max}</td>
+                                                <td className="px-2 border-2">{product.pot_diameter}</td>
                                                 <td className="px-2 text-center space-x-2">
                                                     <button onClick={() => setEditingProductId(product.id)}>
                                                         <FontAwesomeIcon className='text-blue-600' icon={faPenToSquare} />

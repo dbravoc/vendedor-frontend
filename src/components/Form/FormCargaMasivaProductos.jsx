@@ -27,43 +27,41 @@ const FormCargaMasivaProductos = () => {
                 const worksheet = workbook.Sheets[firstSheetName];
                 const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
     
-                // Array donde se guardarán todos los productos
                 const productsToSend = [];
     
-                // Iterar sobre todas las filas (excepto la primera)
                 for (let i = 1; i < rows.length; i++) {
                     const row = rows[i];
-                    const supplierName = row[10].trim(); // Asumiendo que la columna del proveedor es la 11 (índice 10)
-    
-                    // Verificar si el proveedor existe
+                    const supplierName = row[10].trim();
                     const supplierResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/supplier?name=${supplierName}`);
                     
                     if (!supplierResponse.data || supplierResponse.data.length === 0) {
                         throw new Error(`Proveedor no encontrado: ${supplierName}`);
                     }
                     
-                    const supplierId = supplierResponse.data.data.id; // Obtener el id del proveedor
+                    const supplierId = supplierResponse.data.data.id;
                     
                     const productData = {
                         name: row[0],
-                        sku: row[1],
+                        sku: row[1] != null ? String(row[1]) : null,
                         description: row[2],
                         type: row[3],
-                        categories: row[4].toLowerCase().replace(/\s+/g, ''), // Elimina espacios y convierte a minúsculas
+                        categories: row[4].toLowerCase().replace(/\s+/g, ''),
                         initial_quantity: parseInt(row[5], 10),
                         unit_cost: parseFloat(row[6]),
                         price: parseFloat(row[7]),
                         commission_type: row[8],
                         commission: parseFloat(row[9]),
-                        supplier_id: supplierId,  // Aquí se asigna el id del proveedor en lugar del nombre
+                        supplier_id: supplierId,
                         image: row[11] ? row[11].trim() : null,
                         consignment: row[12].toLowerCase() === 'si',
+                        range_pot_diameter_min: row[13] ? parseFloat(row[13]) : null,
+                        range_pot_diameter_max: row[14] ? parseFloat(row[14]) : null,
+                        pot_diameter: row[15] ? parseFloat(row[15]) : null,
                     };
     
-                    // Agregar el producto al array
                     productsToSend.push(productData);
                 }
-                // Enviar la solicitud para agregar todos los productos a la vez
+                console.log(productsToSend);
                 const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/masiveproducts`, {
                     method: 'POST',
                     headers: {
