@@ -240,15 +240,15 @@ const ProductManager = () => {
                                                         onChange={(e) => handleInputChange(e, product.id)}
                                                     />
                                                 </td>
-                                                    <select
-                                                        name="consignment"
-                                                        className="w-full bg-blue-100"
-                                                        value={(formData[product.id]?.consignment ?? product.consignment) ? "Si" : "No"}
-                                                        onChange={(e) => handleInputChangeWithBool(e, product.id)}
-                                                    >
-                                                        <option value="Si">Sí</option>
-                                                        <option value="No">No</option>
-                                                    </select>
+                                                <select
+                                                    name="consignment"
+                                                    className="w-full bg-blue-100"
+                                                    value={(formData[product.id]?.consignment ?? product.consignment) ? "Si" : "No"}
+                                                    onChange={(e) => handleInputChangeWithBool(e, product.id)}
+                                                >
+                                                    <option value="Si">Sí</option>
+                                                    <option value="No">No</option>
+                                                </select>
                                                 <td className="px-2 bg-blue-100 border-2">
                                                     <input
                                                         type="text"
