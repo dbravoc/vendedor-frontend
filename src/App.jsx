@@ -8,6 +8,13 @@ import Inicio from './pages/Inicio';
 import Productos from './pages/Productos';
 import Inventario from './pages/Inventario';
 import Login from './components/Login/CardLogin';
+import CreateProductos from './pages/CreateProductos';
+import Movimientos from './pages/Movimientos';
+import Compras from './pages/Compras';
+import CargaMasivaProductos from './pages/CargaMasivaProductos';
+import CreateMovement from './pages/CreateMovement';
+import CreatePurchase from './pages/CreatePurchase';
+import Proveedores from './pages/Proveedores';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -63,7 +70,14 @@ function App() {
           <Route path="/" element={<Login />} />
           <Route path="/inicio" element={<ProtectedRoute><Inicio /></ProtectedRoute>} />
           <Route path="/productos" element={<ProtectedRoute><Productos /></ProtectedRoute>} />
+          <Route path="/agregarProducto" element={<ProtectedRoute><CreateProductos /></ProtectedRoute>} />
+          <Route path="/CargaMasivaProductos" element={<ProtectedRoute><CargaMasivaProductos /></ProtectedRoute>} />
           <Route path="/inventario" element={<ProtectedRoute><Inventario /></ProtectedRoute>} />
+          <Route path="/movimientos" element={<ProtectedRoute><Movimientos /></ProtectedRoute>} />
+          <Route path="/compras" element={<ProtectedRoute><Compras /></ProtectedRoute>} />
+          <Route path="/nuevo_movimiento" element={<ProtectedRoute><CreateMovement /></ProtectedRoute>} />
+          <Route path="/nueva_compra" element={<ProtectedRoute><CreatePurchase /></ProtectedRoute>} />
+          <Route path="/proveedores" element={<ProtectedRoute><Proveedores /></ProtectedRoute>} />
           <Route path="*" element={<ResetURL />} />
         </Routes>
       </div>
@@ -72,3 +86,5 @@ function App() {
 }
 
 export default App;
+
+//

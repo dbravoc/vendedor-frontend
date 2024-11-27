@@ -3,8 +3,8 @@ import './css/inicio.css';
 import Header from '../components/Header/header';
 import Footer from '../components/Footer/Footer';
 import { useWindowScroll } from '@uidotdev/usehooks';
-import ProductManager from '../components/Card/ProductManager';
-const Productos = () => {
+import FormMovement from '../components/Form/FormMovement';
+const CreateMovement = () => {
   const [{ y }] = useWindowScroll();
   const [scrollPosition, setScrollPosition] = useState(0);
 
@@ -22,7 +22,7 @@ const Productos = () => {
       <Header scrollPosition={scrollPosition} className="fixed-header" />
       <div className="cuerpo">
         <div className='Cabaña-Inicio' data-aos="fade-up">
-        <ProductManager />
+        <FormMovement />
         </div>
         <div className='outer-div-Footer'>
           <Footer />
@@ -32,4 +32,4 @@ const Productos = () => {
   );
 };
 
-export default Productos;
+export default CreateMovement;
