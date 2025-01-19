@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { formatInTimeZone } from 'date-fns-tz';
 import axios from 'axios';
 
 const PurchasesManager = () => {
@@ -11,113 +10,105 @@ const PurchasesManager = () => {
         producto: false,
         descripcion: false,
         categoria: false,
-        filtros: false,
-        fecha: false, // Nuevo filtro para fecha
+        subcategoria: false,
+        fecha: false,
     });
-    const [dateFilter, setDateFilter] = useState({ start: '', end: '' }); // Estados para el rango de fechas
+    const [dateFilter, setDateFilter] = useState({ start: '', end: '' });
 
     useEffect(() => {
         const fetchPurchases = async () => {
             try {
                 const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/purchases`);
-                setPurchases(response.data.purchases);
+                setPurchases(response.data.data || []);
+
             } catch (error) {
-                console.error("Error fetching purchases:", error);
+                console.error('Error fetching purchases:', error);
             }
         };
 
         fetchPurchases();
     }, []);
 
+
     const requestSort = (key) => {
-        let direction = 'ascending';
-        if (sortConfig.key === key && sortConfig.direction === 'ascending') {
-            direction = 'descending';
-        }
-        setSortConfig({ key, direction });
+        setSortConfig((prevConfig) => ({
+            key,
+            direction: prevConfig.key === key && prevConfig.direction === 'ascending' ? 'descending' : 'ascending',
+        }));
     };
 
-    // Filtrar y ordenar las compras
-    const sortedPurchases = useMemo(() => {
-        return purchases
+    const filteredAndSortedPurchases = useMemo(() => {
+        const filterBySearchTerm = (field) =>
+            field?.toString().toLowerCase().includes(searchTerm.toLowerCase());
+
+        const matchesFilters = (purchase) => {
+            const matchesDate = () => {
+                if (!filters.fecha || (!dateFilter.start && !dateFilter.end)) return true;
+                const purchaseDate = new Date(purchase.time);
+                const startDate = dateFilter.start ? new Date(dateFilter.start) : null;
+                const endDate = dateFilter.end ? new Date(dateFilter.end) : null;
+                return (!startDate || purchaseDate >= startDate) && (!endDate || purchaseDate <= endDate);
+            };
+
+            return (
+                (filters.proveedor && filterBySearchTerm(purchase?.suppliers?.name)) ||
+                (filters.producto && filterBySearchTerm(purchase?.products?.name)) ||
+                (filters.descripcion && filterBySearchTerm(purchase?.products?.description)) ||
+                (filters.categoria &&
+                    (purchase?.categories || [])
+                        .some((category) => filterBySearchTerm(category))) ||
+                (filters.subcategoria &&
+                    (purchase?.subcategories || [])
+                        .some((subcategory) => filterBySearchTerm(subcategory))) ||
+                (filters.fecha && matchesDate())
+            );
+        };
+
+        const sorted = purchases
             .filter((purchase) => {
-                const searchInAllFields = (field) =>
-                    field?.toString().toLowerCase().includes(searchTerm.toLowerCase());
-    
-                // Filtrar por fecha si es necesario
-                const matchesDate = () => {
-                    if (!filters.fecha || (!dateFilter.start && !dateFilter.end)) return true;
-                    const purchaseDate = new Date(purchase.time);
-                    const startDate = new Date(dateFilter.start);
-                    const endDate = new Date(dateFilter.end);
-                    return (startDate ? purchaseDate >= startDate : true) && (endDate ? purchaseDate <= endDate : true);
-                };
-                // Si no hay filtros activos, busca en todos los campos
-                if (Object.values(filters).every(value => !value)) {
-                    return (
-                        searchInAllFields(purchase?.suppliers?.name) ||
-                        searchInAllFields(purchase?.products?.name) ||
-                        searchInAllFields(purchase?.products?.description) ||
-                        searchInAllFields(purchase?.products?.type) ||
-                        searchInAllFields(purchase?.products?.categories) ||
-                        searchInAllFields(purchase?.commission_type)
-                    );
-                }
-                return (
-                    Object.values(filters).every((value) => !value) || 
-                    (filters.producto && searchInAllFields(purchase?.products?.name)) ||
-                    (filters.descripcion && searchInAllFields(purchase?.products?.description)) ||
-                    (filters.categoria && searchInAllFields(purchase?.products?.type)) ||
-                    (filters.filtros && searchInAllFields(purchase?.products?.categories)) ||
-                    (filters.commission_type && searchInAllFields(purchase?.commission_type)) ||
-                    (filters.proveedor && searchInAllFields(purchase?.suppliers?.name)) ||
-                    (filters.fecha && matchesDate()) // Añadido filtro por fecha
-                );
+                if (searchTerm === '' && Object.values(filters).every((value) => !value)) return true;
+                return matchesFilters(purchase);
             })
             .sort((a, b) => {
-                let aValue, bValue;
-                if (sortConfig.key === 'supplier') {
-                    aValue = a?.suppliers?.name?.toLowerCase() || '';
-                    bValue = b?.suppliers?.name?.toLowerCase() || '';
-                } else if (sortConfig.key === 'product') {
-                    aValue = a?.products?.name?.toLowerCase() || '';
-                    bValue = b?.products?.name?.toLowerCase() || '';
-                } else if (sortConfig.key === 'description') {
-                    aValue = a?.products?.description?.toLowerCase() || '';
-                    bValue = b?.products?.description?.toLowerCase() || '';
-                } else if (sortConfig.key === 'categories') {
-                    aValue = a?.products?.categories?.toLowerCase() || '';
-                    bValue = b?.products?.categories?.toLowerCase() || '';
-                } else if (sortConfig.key === 'type') {
-                    aValue = a?.products?.type?.toLowerCase() || '';
-                    bValue = b?.products?.type?.toLowerCase() || '';
-                } else {
-                    aValue = a[sortConfig.key];
-                    bValue = b[sortConfig.key];
-                }
-    
-                return sortConfig.direction === 'ascending'
-                    ? aValue < bValue
-                        ? -1
-                        : aValue > bValue
-                        ? 1
-                        : 0
-                    : aValue > bValue
-                    ? -1
-                    : aValue < bValue
-                    ? 1
-                    : 0;
-            });
-    }, [searchTerm, filters, sortConfig, purchases, dateFilter]);
-    const totalCost = sortedPurchases.reduce((sum, purchase) => sum + purchase.unit_cost*purchase.quantity, 0);
-    const totalPrice = sortedPurchases.reduce((sum, purchase) => sum + purchase.products.price*purchase.quantity, 0);
+                const getValue = (item, key) => {
+                    if (key === 'supplier') return item.suppliers?.name?.toLowerCase() || '';
+                    if (key === 'product') return item.products?.name?.toLowerCase() || '';
+                    if (key === 'description') return item.products?.description?.toLowerCase() || '';
+                    if (key === 'categories') 
+                        return (Array.isArray(item.categories) ? item.categories : []).join(', ').toLowerCase();
+                    
+                    if (key === 'subcategories') 
+                        return (Array.isArray(item.subcategories) ? item.subcategories : []).join(', ').toLowerCase();
+                    
+                    return item[key];
+                };
 
+                const aValue = getValue(a, sortConfig.key);
+                const bValue = getValue(b, sortConfig.key);
+
+                if (aValue < bValue) return sortConfig.direction === 'ascending' ? -1 : 1;
+                if (aValue > bValue) return sortConfig.direction === 'ascending' ? 1 : -1;
+                return 0;
+            });
+
+        return sorted;
+    }, [purchases, searchTerm, filters, dateFilter, sortConfig]);
+
+    const totalCost = filteredAndSortedPurchases.reduce(
+        (sum, purchase) => sum + (purchase.unit_cost || 0) * (purchase.quantity || 0),
+        0
+    );
+    const totalPrice = filteredAndSortedPurchases.reduce(
+        (sum, purchase) => sum + (purchase.products?.price || 0) * (purchase.quantity || 0),
+        0
+    );
+console.log(purchases[25].categories)
     return (
         <div className="bg-white min-h-screen w-screen py-24 sm:py-32">
             <div className="mx-auto max-w-7xl px-6 lg:px-8">
                 <div className="mx-auto text-justify">
                     <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-                        Detalles de Movimientos
+                        Detalles de Compras
                     </p>
 
                     {/* Barra de búsqueda */}
@@ -164,19 +155,22 @@ const PurchasesManager = () => {
                         </div>
                     )}
 
-
-                    {/* Tabla pequeña para mostrar el total */}
+                    {/* Totales */}
                     <table className="mb-4 w-full max-w-md ml-0 border border-gray-200 rounded-lg shadow-lg">
                         <thead>
                             <tr className="bg-gray-100 text-gray-700 text-left">
-                            <th className="py-2 px-4 border-b border-gray-200">Costo Total</th>
-                            <th className="py-2 px-4 border-b border-gray-200">Precio total</th>
+                                <th className="py-2 px-4 border-b border-gray-200">Costo Total</th>
+                                <th className="py-2 px-4 border-b border-gray-200">Precio Total</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr className="text-left text-gray-600">
-                            <td className="py-2 px-4 border-b border-gray-200">${Number(totalCost.toFixed(0)).toLocaleString('es-CL')}</td>
-                            <td className="py-2 px-4 border-b border-gray-200">${Number(totalPrice.toFixed(0)).toLocaleString('es-CL')}</td>
+                                <td className="py-2 px-4 border-b border-gray-200">
+                                    ${Number(totalCost.toFixed(0)).toLocaleString('es-CL')}
+                                </td>
+                                <td className="py-2 px-4 border-b border-gray-200">
+                                    ${Number(totalPrice.toFixed(0)).toLocaleString('es-CL')}
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -185,55 +179,42 @@ const PurchasesManager = () => {
                     <table className="text-xs border-2 w-full">
                         <thead>
                             <tr>
-                                <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('supplier')}>
-                                    Proveedor {sortConfig.key === 'supplier' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
-                                </th>
-                                <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('product')}>
-                                    Producto {sortConfig.key === 'product' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
-                                </th>
-                                <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('quantity')}>
-                                    Cantidad {sortConfig.key === 'quantity' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
-                                </th>
-                                <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('unit_cost')}>
-                                    Costo unitario {sortConfig.key === 'unit_cost' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
-                                </th>
-                                <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('unit_cost')}>
-                                    Costo total {sortConfig.key === 'unit_cost' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
-                                </th>
-                                <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('price')}>
-                                    Precio Unitario{sortConfig.key === 'price' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
-                                </th>
-                                <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('price')}>
-                                    Precio Total{sortConfig.key === 'price' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
-                                </th>
-                                <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('time')}>
-                                    Fecha y Hora {sortConfig.key === 'time' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
-                                </th>
-                                <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('description')}>
-                                    Descripción {sortConfig.key === 'description' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
-                                </th>
-                                <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('type')}>
-                                    Categoría {sortConfig.key === 'type' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
-                                </th>
-                                <th className="border border-gray-300 p-2 cursor-pointer" onClick={() => requestSort('categories')}>
-                                    Filtros {sortConfig.key === 'categories' ? (sortConfig.direction === 'ascending' ? '↑' : '↓') : null}
-                                </th>
+                                <th className="border p-2 cursor-pointer" onClick={() => requestSort('supplier')}>Proveedor</th>
+                                <th className="border p-2 cursor-pointer" onClick={() => requestSort('product')}>Producto</th>
+                                <th className="border p-2 cursor-pointer" onClick={() => requestSort('quantity')}>Cantidad</th>
+                                <th className="border p-2 cursor-pointer" onClick={() => requestSort('unit_cost')}>Costo unitario</th>
+                                <th className="border p-2 cursor-pointer" onClick={() => requestSort('unit_cost')}>Costo total</th>
+                                <th className="border p-2 cursor-pointer" onClick={() => requestSort('price')}>Precio unitario</th>
+                                <th className="border p-2 cursor-pointer" onClick={() => requestSort('price')}>Precio total</th>
+                                <th className="border p-2 cursor-pointer" onClick={() => requestSort('time')}>Fecha y hora</th>
+                                <th className="border p-2 cursor-pointer" onClick={() => requestSort('description')}>Descripción</th>
+                                <th className="border p-2 cursor-pointer" onClick={() => requestSort('categories')}>Categorías</th>
+                                <th className="border p-2 cursor-pointer" onClick={() => requestSort('subcategories')}>Subcategorías</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {sortedPurchases.map((purchase, index) => (
+                            {filteredAndSortedPurchases.map((purchase, index) => (
                                 <tr key={index}>
-                                    <td className="border border-gray-300 p-2">{purchase.suppliers?.name}</td>
-                                    <td className="border border-gray-300 p-2">{purchase.products?.name}</td>
-                                    <td className="border border-gray-300 p-2">{purchase.quantity.toLocaleString('es-CL')}</td>
-                                    <td className="border border-gray-300 p-2">${purchase.unit_cost.toLocaleString('es-CL')}</td>
-                                    <td className="border border-gray-300 p-2">${(purchase.unit_cost*purchase.quantity).toLocaleString('es-CL')}</td>
-                                    <td className="border border-gray-300 p-2">${purchase?.products?.price.toLocaleString('es-CL')}</td>
-                                    <td className="border border-gray-300 p-2">${(purchase?.products?.price*purchase.quantity).toLocaleString('es-CL')}</td>
-                                    <td className="border border-gray-300 p-2">{formatInTimeZone(purchase.time, 'UTC', 'yyyy-MM-dd HH:mm:ss')}</td>
-                                    <td className="border border-gray-300 p-2">{purchase.products?.description}</td>
-                                    <td className="border border-gray-300 p-2">{purchase.products?.type}</td>
-                                    <td className="border border-gray-300 p-2">{purchase.products?.categories}</td>
+                                    <td className="border p-2">{purchase.suppliers?.name || 'N/A'}</td>
+                                    <td className="border p-2">{purchase.products?.name || 'N/A'}</td>
+                                    <td className="border p-2">{purchase.quantity}</td>
+                                    <td className="border p-2">${purchase.unit_cost?.toLocaleString('es-CL')}</td>
+                                    <td className="border p-2">${(purchase.unit_cost * purchase.quantity)?.toLocaleString('es-CL')}</td>
+                                    <td className="border p-2">${purchase.products?.price?.toLocaleString('es-CL')}</td>
+                                    <td className="border p-2">${(purchase.products?.price * purchase.quantity)?.toLocaleString('es-CL')}</td>
+                                    <td className="border p-2">{new Date(purchase.time).toLocaleString('es-CL')}</td>
+                                    <td className="border p-2">{purchase.products?.description || 'N/A'}</td>
+                                    <td className="border p-2">
+                                        {Array.isArray(purchase.categories) 
+                                            ? purchase.categories.join(', ') 
+                                            : ''}
+                                    </td>
+                                    <td className="border p-2">
+                                        {Array.isArray(purchase.subcategories) 
+                                            ? purchase.subcategories.join(', ') 
+                                            : ''}
+                                    </td>
+
                                 </tr>
                             ))}
                         </tbody>

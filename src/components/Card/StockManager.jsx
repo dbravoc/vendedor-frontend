@@ -8,8 +8,8 @@ const StockManager = () => {
         name: false,
         stockActual: false,
         stockInicial: false,
-        type: false,
         categories: false,
+        subcategories: false,
         supplier: false,
     });
 
@@ -32,7 +32,7 @@ const StockManager = () => {
         if (!isAnyFilterActive) {
             return Object.keys(product).some((key) => {
                 // Verificar solo las columnas relevantes
-                if (['name', 'initial_quantity', 'type', 'categories'].includes(key)) {
+                if (['name', 'initial_quantity', 'subcategories', 'categories'].includes(key)) {
                     const value = key === 'stockActual' ? stockData[product.id] : product[key];
                     return value && value.toString().toLowerCase().includes(search);
                 }
@@ -104,7 +104,7 @@ const StockManager = () => {
                                 .replace('Categories', 'Categorías') // Cambia 'Categories' a 'Categorías'
                                 .replace('Name', 'Nombre') // Cambia 'Categories' a 'Categorías'
                                 .replace('Supplier', 'Proveedor') // Cambia 'Supplier' a 'Proveedor'
-                                .replace('Type', 'Tipo'); // Cambia 'Type' a 'Tipo'
+                                .replace('Subcategories', 'Tipo'); // Cambia 'Type' a 'Tipo'
 
                             return (
                                 <label key={column} className="flex items-center">
@@ -156,8 +156,8 @@ const StockManager = () => {
                                     <th className="px-2 border-2">Margen unitario</th>
                                     <th className="px-2 border-2">Margen total</th>
                                     <th className="px-2 border-2">Margen total porcentual</th>
-                                    <th className="px-2 border-2">Tipo</th>
-                                    <th className="px-2 border-2">Categorías</th>
+                                    <th className="px-2 border-2">Categoría</th>
+                                    <th className="px-2 border-2">SubCategorías</th>
                                     <th className="px-2 border-2">Proveedor</th>
                                 </tr>
                             </thead>
@@ -174,8 +174,12 @@ const StockManager = () => {
                                         <td className="px-2 border-2">${Number((product.price * 0.81).toFixed(0) - product.unit_cost).toLocaleString('es-CL')}</td>
                                         <td className="px-2 border-2">${Number(((product.price * 0.81).toFixed(0) - product.unit_cost) * stockData[product.id]).toLocaleString('es-CL')}</td>
                                         <td className="px-2 border-2">{(100*((product.price * 0.81).toFixed(0) - product.unit_cost)/product.unit_cost).toFixed(0)}%</td>
-                                        <td className="px-2 border-2">{product.type}</td>
-                                        <td className="px-2 border-2">{product.categories}</td>
+                                        <td className="px-2 border-2">
+                                            {product.categories && product.categories.length > 0 ? product.categories.join(', ') : '-'}
+                                        </td>
+                                        <td className="px-2 border-2">
+                                            {product.subcategories && product.subcategories.length > 0 ? product.subcategories.join(', ') : '-'}
+                                        </td>
                                         <td className="px-2 border-2">{product.suppliers.name}</td>
                                     </tr>
                                 ))}

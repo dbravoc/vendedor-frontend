@@ -188,7 +188,7 @@ const SalesManager = () => {
             <div className="mx-auto max-w-7xl px-6 lg:px-8">
                 <div className="mx-auto text-justify">
                     <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-                        Detalles de Movimientos
+                        Detalles de Ventas
                     </p>
 
                     {/* Buscador */}
