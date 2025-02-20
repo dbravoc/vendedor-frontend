@@ -125,12 +125,12 @@ const ProductManager = () => {
                                 <tr>
                                     <th onClick={() => handleSort('name')} className="px-2 cursor-pointer">Nombre {sortConfig.key === 'name' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : null}</th>
                                     <th onClick={() => handleSort('description')} className="px-2 cursor-pointer">Descripción {sortConfig.key === 'description' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : null}</th>
-                                    <th onClick={() => handleSort('type')} className="px-2 cursor-pointer">Categorías {sortConfig.key === 'type' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : null}</th>
-                                    <th onClick={() => handleSort('categories')} className="px-2 cursor-pointer">Filtros {sortConfig.key === 'categories' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : null}</th>
+                                    <th onClick={() => handleSort('categories')} className="px-2 cursor-pointer">Categorías {sortConfig.key === 'categories' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : null}</th>
+                                    <th onClick={() => handleSort('subcategories')} className="px-2 cursor-pointer">Subcategorías {sortConfig.key === 'subcategories' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : null}</th>
                                     <th
-    onClick={() => handleSort('suppliers.name')}
-    className="px-2 cursor-pointer"
->
+                                        onClick={() => handleSort('suppliers.name')}
+                                        className="px-2 cursor-pointer"
+                                    >
     Proveedor {sortConfig.key === 'suppliers.name' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : null}
 </th>
                                     <th onClick={() => handleSort('price')} className="px-2 cursor-pointer">Precio {sortConfig.key === 'price' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : null}</th>
@@ -171,18 +171,18 @@ const ProductManager = () => {
                                                 <td className="px-2 bg-blue-100 border-2">
                                                     <input
                                                         type="text"
-                                                        name="type"
+                                                        name="categories"
                                                         className="w-full bg-blue-100"
-                                                        value={formData[product.id]?.type || product.type}
+                                                        value={formData[product.id]?.categories || product.categories}
                                                         onChange={(e) => handleInputChange(e, product.id)}
                                                     />
                                                 </td>
                                                 <td className="px-2 bg-blue-100 border-2">
                                                     <input
                                                         type="text"
-                                                        name="categories"
+                                                        name="subcategories"
                                                         className="w-full bg-blue-100"
-                                                        value={formData[product.id]?.categories || product.categories}
+                                                        value={formData[product.id]?.subcategories || product.subcategories}
                                                         onChange={(e) => handleInputChange(e, product.id)}
                                                     />
                                                 </td>
@@ -299,8 +299,8 @@ const ProductManager = () => {
                                             <>
                                                 <td className="px-2 border-2">{product.name}</td>
                                                 <td className="px-2 border-2">{product.description}</td>
-                                                <td className="px-2 border-2">{product.type}</td>
-                                                <td className="px-2 border-2">{product.categories}</td>
+                                                <td className="px-2 border-2">{product.categories && product.categories.length > 0 ? product.categories.join(', ') : '-'}</td>
+                                                <td className="px-2 border-2">{product.subcategories && product.subcategories.length > 0 ? product.subcategories.join(', ') : '-'}</td>
                                                 <td className="px-2 border-2">{product.suppliers ? product.suppliers.name : "No disponible"}</td>
                                                 <td className="px-2 border-2">${product.price.toLocaleString('es-CL')}</td>
                                                 <td className="px-2 border-2">${product.unit_cost.toLocaleString('es-CL')}</td>
